@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Profile</title>
+<title>Teacher Profile</title>
 
 <style>
 body{
@@ -31,8 +31,14 @@ input,select{
   border-radius:8px;
   border:1px solid #ccc;
   background:#f9fbfd;
-  color:#333;
 }
+
+/* 🎨 COLOR SYSTEM */
+.good { background:#c8f7c5; }       /* green */
+.vgood { background:#cde7ff; }      /* blue */
+.avg { background:#fff3b0; }        /* yellow */
+.low { background:#ffd6a5; }        /* orange */
+.bad { background:#ffadad; }        /* red */
 
 button{
   margin-top:10px;
@@ -45,13 +51,6 @@ button{
 
 .save{background:#4CAF50;}
 .logout{background:#ff6b6b;}
-
-.admin{
-  background:#e5e5e5;
-  color:#333;
-  width:100%;
-  font-weight:bold;
-}
 
 .record-box{
   margin-top:15px;
@@ -66,43 +65,6 @@ button{
   text-align:center;
   color:green;
 }
-
-/* 🔐 MODAL */
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  justify-content:center;
-  align-items:center;
-}
-
-.modal-box{
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  width:300px;
-  text-align:center;
-}
-
-.enter-btn{
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  background:#4CAF50;
-  color:white;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.cancel-link{
-  margin-top:10px;
-  color:#666;
-  cursor:pointer;
-  font-size:14px;
-}
-.cancel-link:hover{ color:#000; }
 </style>
 </head>
 
@@ -116,7 +78,7 @@ if(!user) location.href="login.html";
 <div class="card">
 
 <div class="header">
-  <div class="school">Bakhaw Integrated School (500440)</div>
+  <div class="school">Bakhaw Integrated School</div>
   <div class="title">Teacher Profile</div>
   <div class="datetime" id="clock"></div>
 </div>
@@ -125,10 +87,10 @@ if(!user) location.href="login.html";
 <input id="first" placeholder="First Name">
 <input id="middle" placeholder="Middle Name">
 
-<select id="gender" required>
-  <option value="" disabled selected hidden>Sex</option>
-  <option value="MALE">MALE</option>
-  <option value="FEMALE">FEMALE</option>
+<select id="gender">
+<option value="" disabled selected hidden>Sex</option>
+<option value="MALE">MALE</option>
+<option value="FEMALE">FEMALE</option>
 </select>
 
 <input id="position" placeholder="Position">
@@ -141,119 +103,162 @@ if(!user) location.href="login.html";
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
 
+<!-- IPCRF -->
+<select id="ipcrf1">
+<option value="" disabled selected hidden>IPCRF Rating 2023-2024</option>
+<option value="5">5 - Outstanding</option>
+<option value="4">4 - Very Satisfactory</option>
+<option value="3">3 - Satisfactory</option>
+<option value="2">2 - Unsatisfactory</option>
+<option value="1">1 - Poor</option>
+</select>
+
+<select id="ipcrf2">
+<option value="" disabled selected hidden>IPCRF Rating 2024-2025</option>
+<option value="5">5 - Outstanding</option>
+<option value="4">4 - Very Satisfactory</option>
+<option value="3">3 - Satisfactory</option>
+<option value="2">2 - Unsatisfactory</option>
+<option value="1">1 - Poor</option>
+</select>
+
+<select id="ipcrf3">
+<option value="" disabled selected hidden>IPCRF Rating 2025-2026</option>
+<option value="5">5 - Outstanding</option>
+<option value="4">4 - Very Satisfactory</option>
+<option value="3">3 - Satisfactory</option>
+<option value="2">2 - Unsatisfactory</option>
+<option value="1">1 - Poor</option>
+</select>
+
+<!-- AUTO -->
+<input id="avg" placeholder="Average Rating" readonly>
+<input id="remarks" placeholder="Remarks" readonly>
+
 <button class="save" onclick="save()">Save</button>
 <button class="logout" onclick="logout()">Logout</button>
 
 <div id="msg"></div>
 
 <div class="record-box">
-  <b>Your Current Record</b>
-  <div id="recordContent">No record yet</div>
+<b>Your Current Record</b>
+<div id="recordContent">No record yet</div>
 </div>
 
-<button class="admin" onclick="openAdminModal()">Admin</button>
-
-</div>
-
-<!-- 🔐 ADMIN MODAL -->
-<div class="modal" id="adminModal">
-  <div class="modal-box">
-    <h3>Enter Admin Password</h3>
-    <input type="password" id="adminPass" placeholder="Password">
-    <button class="enter-btn" onclick="checkAdmin()">Enter</button>
-    <div class="cancel-link" onclick="closeAdmin()">Cancel</div>
-  </div>
 </div>
 
 <script>
 
 /* CLOCK */
 function updateClock(){
-  clock.innerText = new Date().toLocaleString();
+clock.innerText=new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"});
 }
 setInterval(updateClock,1000);
 updateClock();
 
 /* CAPS */
-function caps(el){ el.value = el.value.toUpperCase(); }
-[first, middle, position, subject].forEach(el=>{
-  el.addEventListener("input", () => caps(el));
+function caps(el){ el.value=el.value.toUpperCase(); }
+[first,middle,position,subject].forEach(el=>{
+el.addEventListener("input",()=>caps(el));
 });
 
 /* ENTER NEXT */
-const fields = document.querySelectorAll("input, select");
-fields.forEach((field, index) => {
-  field.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-      e.preventDefault();
-      if(fields[index + 1]) fields[index + 1].focus();
-    }
-  });
+const fields=document.querySelectorAll("input,select");
+fields.forEach((f,i)=>{
+f.addEventListener("keydown",e=>{
+if(e.key==="Enter"){e.preventDefault(); if(fields[i+1]) fields[i+1].focus();}
+});
 });
 
-/* 🔐 MODAL CONTROL */
-function openAdminModal(){
-  adminModal.style.display="flex";
-  adminPass.value="";
-  adminPass.focus();
+/* 🎨 COMPUTE WITH COLOR */
+function compute(){
+
+let v1=parseFloat(ipcrf1.value)||0;
+let v2=parseFloat(ipcrf2.value)||0;
+let v3=parseFloat(ipcrf3.value)||0;
+
+let count=[v1,v2,v3].filter(v=>v>0).length;
+
+if(count===0){
+avg.value="";
+remarks.value="";
+avg.className="";
+remarks.className="";
+return;
 }
-function closeAdmin(){
-  adminModal.style.display="none";
+
+let a=((v1+v2+v3)/count).toFixed(2);
+avg.value=a;
+
+avg.className="";
+remarks.className="";
+
+if(a>=4.5){
+remarks.value="Outstanding";
+avg.classList.add("good");
+remarks.classList.add("good");
 }
-function checkAdmin(){
-  if(adminPass.value === "2929"){
-    sessionStorage.setItem("adminAuth","true");
-    location.href="admin.html";
-  }else{
-    alert("Incorrect password");
-  }
+else if(a>=3.5){
+remarks.value="Very Satisfactory";
+avg.classList.add("vgood");
+remarks.classList.add("vgood");
 }
+else if(a>=2.5){
+remarks.value="Satisfactory";
+avg.classList.add("avg");
+remarks.classList.add("avg");
+}
+else if(a>=1.5){
+remarks.value="Unsatisfactory";
+avg.classList.add("low");
+remarks.classList.add("low");
+}
+else{
+remarks.value="Poor";
+avg.classList.add("bad");
+remarks.classList.add("bad");
+}
+}
+
+[ipcrf1,ipcrf2,ipcrf3].forEach(el=>{
+el.addEventListener("change",compute);
+});
 
 /* LOAD */
 async function loadProfile(){
-const res = await fetch("/api/teacher/"+user);
-const d = await res.json();
+const res=await fetch("/api/teacher/"+user);
+const d=await res.json();
 
-if(!d.name){
-  recordContent.innerHTML = "No record yet";
-  return;
-}
+if(!d.name)return;
 
 const parts=d.name.split(",");
 family.value=parts[0]||"";
 first.value=(parts[1]||"").trim().split(" ")[0]||"";
 middle.value=(parts[1]||"").trim().split(" ")[1]||"";
 
-gender.value = d.gender || "";
-position.value = (d.position || "").toUpperCase();
-subject.value = (d.subject || "").toUpperCase();
-years.value = d.years_service || "";
-gsis.value = d.gsis_no || "";
-phil.value = d.philhealth_no || "";
-tin.value = d.tin_no || "";
-emp.value = d.employee_no || "";
-bp.value = d.bp_no || "";
+gender.value=d.gender||"";
+position.value=(d.position||"").toUpperCase();
+subject.value=(d.subject||"").toUpperCase();
+years.value=d.years_service||"";
+gsis.value=d.gsis_no||"";
+phil.value=d.philhealth_no||"";
+tin.value=d.tin_no||"";
+emp.value=d.employee_no||"";
+bp.value=d.bp_no||"";
 
-/* DISPLAY */
-recordContent.innerHTML = `
-<b>Name:</b> ${d.name}<br>
-<b>Sex:</b> ${d.gender}<br>
-<b>Position:</b> ${d.position}<br>
-<b>Subject:</b> ${d.subject}<br>
-<b>Years:</b> ${d.years_service}<br>
-<b>GSIS:</b> ${d.gsis_no}<br>
-<b>PhilHealth:</b> ${d.philhealth_no}<br>
-<b>TIN:</b> ${d.tin_no}<br>
-<b>Employee No:</b> ${d.employee_no}<br>
-<b>BP No:</b> ${d.bp_no}
-`;
+ipcrf1.value=d.ipcrf_2023||"";
+ipcrf2.value=d.ipcrf_2024||"";
+ipcrf3.value=d.ipcrf_2025||"";
+
+compute();
+updateRecord(d);
 }
 
 /* SAVE */
 async function save(){
 
-[first, middle, position, subject].forEach(el=>{
-  el.value = el.value.toUpperCase();
+[first,middle,position,subject].forEach(el=>{
+el.value=el.value.toUpperCase();
 });
 
 await fetch("/api/save-teacher",{
@@ -270,15 +275,30 @@ gsis_no:gsis.value,
 philhealth_no:phil.value,
 tin_no:tin.value,
 employee_no:emp.value,
-bp_no:bp.value
+bp_no:bp.value,
+ipcrf_2023:ipcrf1.value,
+ipcrf_2024:ipcrf2.value,
+ipcrf_2025:ipcrf3.value
 })
 });
 
 msg.innerText="Saved";
-await loadProfile();
 setTimeout(()=>msg.innerText="",2000);
+
+loadProfile();
 }
 
+/* RECORD */
+function updateRecord(d){
+recordContent.innerHTML=`
+Name: ${d.name||""}<br>
+Position: ${d.position||""}<br>
+IPCRF Avg: ${avg.value||""}<br>
+Remarks: ${remarks.value||""}
+`;
+}
+
+/* LOGOUT */
 function logout(){
 localStorage.removeItem("user");
 location.href="login.html";
