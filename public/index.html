@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Teacher Profile V2 UPDATED</title>
+<title>Teacher Profile V3 NUMERIC</title>
 
 <style>
 body{
@@ -24,14 +24,13 @@ body{
 .title{font-size:30px;font-weight:bold;}
 .datetime{font-size:13px;color:#666;}
 
-/* 🔥 VISUAL CONFIRM */
 .version{
-  background:#e3f2fd;
+  background:#e8f5e9;
   padding:6px;
   border-radius:6px;
   font-size:12px;
   margin-top:5px;
-  color:#1976d2;
+  color:#2e7d32;
   font-weight:bold;
 }
 
@@ -84,7 +83,7 @@ if(!user) location.href="login.html";
 <div class="header">
   <div class="school">Bakhaw Integrated School</div>
   <div class="title">Teacher Profile</div>
-  <div class="version">V2 UPDATED ✔</div>
+  <div class="version">V3 NUMERIC ✔</div>
   <div class="datetime" id="clock"></div>
 </div>
 
@@ -108,7 +107,7 @@ if(!user) location.href="login.html";
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
 
-<!-- ✅ NUMERIC IPCRF -->
+<!-- ✅ NUMERIC IPCRF ONLY -->
 <input id="ipcrf1" type="number" min="1" max="5" placeholder="IPCRF Rating 2023-2024 (1–5)">
 <input id="ipcrf2" type="number" min="1" max="5" placeholder="IPCRF Rating 2024-2025 (1–5)">
 <input id="ipcrf3" type="number" min="1" max="5" placeholder="IPCRF Rating 2025-2026 (1–5)">
@@ -214,7 +213,7 @@ setTimeout(()=>msg.innerText="",2000);
 loadProfile();
 }
 
-/* RECORD */
+/* RECORD DISPLAY */
 function updateRecord(d){
 recordContent.innerHTML=`
 Name: ${d.name||""}<br>
