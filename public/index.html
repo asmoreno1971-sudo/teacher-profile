@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Teacher Profile V4 DECIMAL</title>
+<title>Teacher Profile V5 FINAL</title>
 
 <style>
 body{
@@ -25,12 +25,12 @@ body{
 .datetime{font-size:13px;color:#666;}
 
 .version{
-  background:#e3f2fd;
+  background:#e8f5e9;
   padding:6px;
   border-radius:6px;
   font-size:12px;
   margin-top:5px;
-  color:#1565c0;
+  color:#2e7d32;
   font-weight:bold;
 }
 
@@ -83,7 +83,7 @@ if(!user) location.href="login.html";
 <div class="header">
   <div class="school">Bakhaw Integrated School</div>
   <div class="title">Teacher Profile</div>
-  <div class="version">V4 DECIMAL ✔</div>
+  <div class="version">V5 FINAL ✔</div>
   <div class="datetime" id="clock"></div>
 </div>
 
@@ -107,7 +107,7 @@ if(!user) location.href="login.html";
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
 
-<!-- ✅ DECIMAL IPCRF INPUTS -->
+<!-- ✅ DECIMAL INPUTS -->
 <input id="ipcrf1" type="number" step="any" placeholder="IPCRF Rating 2023-2024">
 <input id="ipcrf2" type="number" step="any" placeholder="IPCRF Rating 2024-2025">
 <input id="ipcrf3" type="number" step="any" placeholder="IPCRF Rating 2025-2026">
@@ -213,14 +213,24 @@ setTimeout(()=>msg.innerText="",2000);
 loadProfile();
 }
 
-/* RECORD */
+/* FULL RECORD DISPLAY */
 function updateRecord(d){
 recordContent.innerHTML=`
 Name: ${d.name||""}<br>
+Gender: ${d.gender||""}<br>
 Position: ${d.position||""}<br>
-IPCRF 2023: ${d.ipcrf_2023||""}<br>
-IPCRF 2024: ${d.ipcrf_2024||""}<br>
-IPCRF 2025: ${d.ipcrf_2025||""}
+Subject: ${d.subject||""}<br>
+Years: ${d.years_service||""}<br>
+GSIS: ${d.gsis_no||""}<br>
+PhilHealth: ${d.philhealth_no||""}<br>
+TIN: ${d.tin_no||""}<br>
+Employee No: ${d.employee_no||""}<br>
+BP No: ${d.bp_no||""}<br><br>
+
+<b>IPCRF Ratings</b><br>
+2023–2024: ${d.ipcrf_2023 ?? ""}<br>
+2024–2025: ${d.ipcrf_2024 ?? ""}<br>
+2025–2026: ${d.ipcrf_2025 ?? ""}
 `;
 }
 
