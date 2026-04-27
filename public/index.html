@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Teacher Profile</title>
+<title>Teacher Profile V2 UPDATED</title>
 
 <style>
 body{
@@ -24,6 +24,17 @@ body{
 .title{font-size:30px;font-weight:bold;}
 .datetime{font-size:13px;color:#666;}
 
+/* 🔥 VISUAL CONFIRM */
+.version{
+  background:#e3f2fd;
+  padding:6px;
+  border-radius:6px;
+  font-size:12px;
+  margin-top:5px;
+  color:#1976d2;
+  font-weight:bold;
+}
+
 input,select{
   width:100%;
   margin-top:10px;
@@ -32,13 +43,6 @@ input,select{
   border:1px solid #ccc;
   background:#f9fbfd;
 }
-
-/* 🎨 COLOR SYSTEM */
-.good { background:#c8f7c5; }       /* green */
-.vgood { background:#cde7ff; }      /* blue */
-.avg { background:#fff3b0; }        /* yellow */
-.low { background:#ffd6a5; }        /* orange */
-.bad { background:#ffadad; }        /* red */
 
 button{
   margin-top:10px;
@@ -49,8 +53,8 @@ button{
   cursor:pointer;
 }
 
-.save{background:#4CAF50;}
-.logout{background:#ff6b6b;}
+.save{background:#2e7d32;}
+.logout{background:#d32f2f;}
 
 .record-box{
   margin-top:15px;
@@ -80,6 +84,7 @@ if(!user) location.href="login.html";
 <div class="header">
   <div class="school">Bakhaw Integrated School</div>
   <div class="title">Teacher Profile</div>
+  <div class="version">V2 UPDATED ✔</div>
   <div class="datetime" id="clock"></div>
 </div>
 
@@ -103,37 +108,10 @@ if(!user) location.href="login.html";
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
 
-<!-- IPCRF -->
-<select id="ipcrf1">
-<option value="" disabled selected hidden>IPCRF Rating 2023-2024</option>
-<option value="5">5 - Outstanding</option>
-<option value="4">4 - Very Satisfactory</option>
-<option value="3">3 - Satisfactory</option>
-<option value="2">2 - Unsatisfactory</option>
-<option value="1">1 - Poor</option>
-</select>
-
-<select id="ipcrf2">
-<option value="" disabled selected hidden>IPCRF Rating 2024-2025</option>
-<option value="5">5 - Outstanding</option>
-<option value="4">4 - Very Satisfactory</option>
-<option value="3">3 - Satisfactory</option>
-<option value="2">2 - Unsatisfactory</option>
-<option value="1">1 - Poor</option>
-</select>
-
-<select id="ipcrf3">
-<option value="" disabled selected hidden>IPCRF Rating 2025-2026</option>
-<option value="5">5 - Outstanding</option>
-<option value="4">4 - Very Satisfactory</option>
-<option value="3">3 - Satisfactory</option>
-<option value="2">2 - Unsatisfactory</option>
-<option value="1">1 - Poor</option>
-</select>
-
-<!-- AUTO -->
-<input id="avg" placeholder="Average Rating" readonly>
-<input id="remarks" placeholder="Remarks" readonly>
+<!-- ✅ NUMERIC IPCRF -->
+<input id="ipcrf1" type="number" min="1" max="5" placeholder="IPCRF Rating 2023-2024 (1–5)">
+<input id="ipcrf2" type="number" min="1" max="5" placeholder="IPCRF Rating 2024-2025 (1–5)">
+<input id="ipcrf3" type="number" min="1" max="5" placeholder="IPCRF Rating 2025-2026 (1–5)">
 
 <button class="save" onclick="save()">Save</button>
 <button class="logout" onclick="logout()">Logout</button>
@@ -166,62 +144,11 @@ el.addEventListener("input",()=>caps(el));
 const fields=document.querySelectorAll("input,select");
 fields.forEach((f,i)=>{
 f.addEventListener("keydown",e=>{
-if(e.key==="Enter"){e.preventDefault(); if(fields[i+1]) fields[i+1].focus();}
+if(e.key==="Enter"){
+e.preventDefault();
+if(fields[i+1]) fields[i+1].focus();
+}
 });
-});
-
-/* 🎨 COMPUTE WITH COLOR */
-function compute(){
-
-let v1=parseFloat(ipcrf1.value)||0;
-let v2=parseFloat(ipcrf2.value)||0;
-let v3=parseFloat(ipcrf3.value)||0;
-
-let count=[v1,v2,v3].filter(v=>v>0).length;
-
-if(count===0){
-avg.value="";
-remarks.value="";
-avg.className="";
-remarks.className="";
-return;
-}
-
-let a=((v1+v2+v3)/count).toFixed(2);
-avg.value=a;
-
-avg.className="";
-remarks.className="";
-
-if(a>=4.5){
-remarks.value="Outstanding";
-avg.classList.add("good");
-remarks.classList.add("good");
-}
-else if(a>=3.5){
-remarks.value="Very Satisfactory";
-avg.classList.add("vgood");
-remarks.classList.add("vgood");
-}
-else if(a>=2.5){
-remarks.value="Satisfactory";
-avg.classList.add("avg");
-remarks.classList.add("avg");
-}
-else if(a>=1.5){
-remarks.value="Unsatisfactory";
-avg.classList.add("low");
-remarks.classList.add("low");
-}
-else{
-remarks.value="Poor";
-avg.classList.add("bad");
-remarks.classList.add("bad");
-}
-}
-
-[ipcrf1,ipcrf2,ipcrf3].forEach(el=>{
-el.addEventListener("change",compute);
 });
 
 /* LOAD */
@@ -229,7 +156,7 @@ async function loadProfile(){
 const res=await fetch("/api/teacher/"+user);
 const d=await res.json();
 
-if(!d.name)return;
+if(!d.name) return;
 
 const parts=d.name.split(",");
 family.value=parts[0]||"";
@@ -250,7 +177,6 @@ ipcrf1.value=d.ipcrf_2023||"";
 ipcrf2.value=d.ipcrf_2024||"";
 ipcrf3.value=d.ipcrf_2025||"";
 
-compute();
 updateRecord(d);
 }
 
@@ -293,8 +219,9 @@ function updateRecord(d){
 recordContent.innerHTML=`
 Name: ${d.name||""}<br>
 Position: ${d.position||""}<br>
-IPCRF Avg: ${avg.value||""}<br>
-Remarks: ${remarks.value||""}
+IPCRF 2023: ${d.ipcrf_2023||""}<br>
+IPCRF 2024: ${d.ipcrf_2024||""}<br>
+IPCRF 2025: ${d.ipcrf_2025||""}
 `;
 }
 
