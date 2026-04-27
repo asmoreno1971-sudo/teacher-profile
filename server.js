@@ -10,12 +10,7 @@ const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
-/* 🔥 SERVE FRONTEND */
 app.use(express.static(path.join(__dirname, "public")));
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
 
 /* =========================
    DATABASE
@@ -40,10 +35,7 @@ CREATE TABLE IF NOT EXISTS teachers (
   philhealth_no TEXT,
   tin_no TEXT,
   employee_no TEXT,
-  bp_no TEXT,
-  ipcrf_2023 REAL,
-  ipcrf_2024 REAL,
-  ipcrf_2025 REAL
+  bp_no TEXT
 )
 `);
 
@@ -57,10 +49,9 @@ app.post("/api/save-teacher", (req, res) => {
   db.run(`
   INSERT INTO teachers (
     teacher_id, name, gender, position, subject, years_service,
-    gsis_no, philhealth_no, tin_no, employee_no, bp_no,
-    ipcrf_2023, ipcrf_2024, ipcrf_2025
+    gsis_no, philhealth_no, tin_no, employee_no, bp_no
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT(teacher_id) DO UPDATE SET
     name=excluded.name,
     gender=excluded.gender,
@@ -71,10 +62,7 @@ app.post("/api/save-teacher", (req, res) => {
     philhealth_no=excluded.philhealth_no,
     tin_no=excluded.tin_no,
     employee_no=excluded.employee_no,
-    bp_no=excluded.bp_no,
-    ipcrf_2023=excluded.ipcrf_2023,
-    ipcrf_2024=excluded.ipcrf_2024,
-    ipcrf_2025=excluded.ipcrf_2025
+    bp_no=excluded.bp_no
   `, [
     d.teacher_id,
     d.name,
@@ -86,33 +74,27 @@ app.post("/api/save-teacher", (req, res) => {
     d.philhealth_no,
     d.tin_no,
     d.employee_no,
-    d.bp_no,
-    d.ipcrf_2023,
-    d.ipcrf_2024,
-    d.ipcrf_2025
+    d.bp_no
   ], (err) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ error: "Save failed" });
+      return res.json({ success:false });
     }
-    res.json({ success: true });
+    res.json({ success:true });
   });
 
 });
 
 /* =========================
-   GET ONE TEACHER
+   GET ONE
 ========================= */
 app.get("/api/teacher/:id", (req, res) => {
 
   db.get(
-    "SELECT * FROM teachers WHERE teacher_id = ?",
+    "SELECT * FROM teachers WHERE teacher_id=?",
     [req.params.id],
     (err, row) => {
-      if (err) {
-        console.error(err);
-        return res.json({});
-      }
+      if (err) return res.json({});
       res.json(row || {});
     }
   );
@@ -120,23 +102,20 @@ app.get("/api/teacher/:id", (req, res) => {
 });
 
 /* =========================
-   GET ALL TEACHERS
+   GET ALL
 ========================= */
 app.get("/api/all-teachers", (req, res) => {
 
   db.all("SELECT * FROM teachers", [], (err, rows) => {
-    if (err) {
-      console.error(err);
-      return res.json([]);
-    }
+    if (err) return res.json([]);
     res.json(rows);
   });
 
 });
 
 /* =========================
-   START SERVER
+   START
 ========================= */
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log("🚀 Server running on port " + PORT);
 });
