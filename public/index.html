@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Teacher Profile V3 NUMERIC</title>
+<title>Teacher Profile V4 DECIMAL</title>
 
 <style>
 body{
@@ -25,12 +25,12 @@ body{
 .datetime{font-size:13px;color:#666;}
 
 .version{
-  background:#e8f5e9;
+  background:#e3f2fd;
   padding:6px;
   border-radius:6px;
   font-size:12px;
   margin-top:5px;
-  color:#2e7d32;
+  color:#1565c0;
   font-weight:bold;
 }
 
@@ -83,7 +83,7 @@ if(!user) location.href="login.html";
 <div class="header">
   <div class="school">Bakhaw Integrated School</div>
   <div class="title">Teacher Profile</div>
-  <div class="version">V3 NUMERIC ✔</div>
+  <div class="version">V4 DECIMAL ✔</div>
   <div class="datetime" id="clock"></div>
 </div>
 
@@ -107,10 +107,10 @@ if(!user) location.href="login.html";
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
 
-<!-- ✅ NUMERIC IPCRF ONLY -->
-<input id="ipcrf1" type="number" min="1" max="5" placeholder="IPCRF Rating 2023-2024 (1–5)">
-<input id="ipcrf2" type="number" min="1" max="5" placeholder="IPCRF Rating 2024-2025 (1–5)">
-<input id="ipcrf3" type="number" min="1" max="5" placeholder="IPCRF Rating 2025-2026 (1–5)">
+<!-- ✅ DECIMAL IPCRF INPUTS -->
+<input id="ipcrf1" type="number" step="any" placeholder="IPCRF Rating 2023-2024">
+<input id="ipcrf2" type="number" step="any" placeholder="IPCRF Rating 2024-2025">
+<input id="ipcrf3" type="number" step="any" placeholder="IPCRF Rating 2025-2026">
 
 <button class="save" onclick="save()">Save</button>
 <button class="logout" onclick="logout()">Logout</button>
@@ -213,7 +213,7 @@ setTimeout(()=>msg.innerText="",2000);
 loadProfile();
 }
 
-/* RECORD DISPLAY */
+/* RECORD */
 function updateRecord(d){
 recordContent.innerHTML=`
 Name: ${d.name||""}<br>
