@@ -1,30 +1,36 @@
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
+const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
 
 const app = express();
-const PORT = 3456;
+const PORT = 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
+
+/* 🔥 SERVE FRONTEND */
 app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 /* =========================
    DATABASE
 ========================= */
 const db = new sqlite3.Database("./teachers.db", (err) => {
   if (err) console.error(err.message);
-  else console.log("✅ DB Connected");
+  else console.log("✅ Connected to SQLite");
 });
 
 /* =========================
-   TABLES
+   CREATE TABLE
 ========================= */
 db.run(`
 CREATE TABLE IF NOT EXISTS teachers (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  teacher_id TEXT UNIQUE,
+  teacher_id TEXT PRIMARY KEY,
   name TEXT,
   gender TEXT,
   position TEXT,
@@ -35,95 +41,61 @@ CREATE TABLE IF NOT EXISTS teachers (
   tin_no TEXT,
   employee_no TEXT,
   bp_no TEXT,
-  last_updated TEXT
-)
-`);
-
-db.run(`
-CREATE TABLE IF NOT EXISTS users (
-  username TEXT PRIMARY KEY,
-  password TEXT
+  ipcrf_2023 REAL,
+  ipcrf_2024 REAL,
+  ipcrf_2025 REAL
 )
 `);
 
 /* =========================
-   LOGIN
-========================= */
-app.post("/api/login", (req, res) => {
-  const { username, password } = req.body;
-
-  db.get(
-    "SELECT * FROM users WHERE username=? AND password=?",
-    [username, password],
-    (err, row) => {
-      if (!row) return res.json({ ok: false });
-      res.json({ ok: true });
-    }
-  );
-});
-
-/* =========================
-   REGISTER (AUTO)
-========================= */
-app.post("/api/register", (req, res) => {
-  const { username, password } = req.body;
-
-  db.run(
-    "INSERT INTO users (username,password) VALUES (?,?)",
-    [username, password],
-    (err) => {
-      if (err) return res.json({ ok: false });
-      res.json({ ok: true });
-    }
-  );
-});
-
-/* =========================
-   SAVE TEACHER (🔥 FIXED)
+   SAVE TEACHER
 ========================= */
 app.post("/api/save-teacher", (req, res) => {
 
-  const t = req.body;
+  const d = req.body;
 
   db.run(`
-    INSERT INTO teachers (
-      teacher_id,name,gender,position,subject,
-      years_service,gsis_no,philhealth_no,
-      tin_no,employee_no,bp_no,last_updated
-    )
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,
-      strftime('%Y-%m-%d %H:%M:%S','now','+8 hours')
-    )
-    ON CONFLICT(teacher_id) DO UPDATE SET
-      name=excluded.name,
-      gender=excluded.gender,
-      position=excluded.position,
-      subject=excluded.subject,
-      years_service=excluded.years_service,
-      gsis_no=excluded.gsis_no,
-      philhealth_no=excluded.philhealth_no,
-      tin_no=excluded.tin_no,
-      employee_no=excluded.employee_no,
-      bp_no=excluded.bp_no,
-      last_updated=strftime('%Y-%m-%d %H:%M:%S','now','+8 hours')
+  INSERT INTO teachers (
+    teacher_id, name, gender, position, subject, years_service,
+    gsis_no, philhealth_no, tin_no, employee_no, bp_no,
+    ipcrf_2023, ipcrf_2024, ipcrf_2025
+  )
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  ON CONFLICT(teacher_id) DO UPDATE SET
+    name=excluded.name,
+    gender=excluded.gender,
+    position=excluded.position,
+    subject=excluded.subject,
+    years_service=excluded.years_service,
+    gsis_no=excluded.gsis_no,
+    philhealth_no=excluded.philhealth_no,
+    tin_no=excluded.tin_no,
+    employee_no=excluded.employee_no,
+    bp_no=excluded.bp_no,
+    ipcrf_2023=excluded.ipcrf_2023,
+    ipcrf_2024=excluded.ipcrf_2024,
+    ipcrf_2025=excluded.ipcrf_2025
   `, [
-    t.teacher_id,
-    t.name,
-    t.gender,
-    t.position,
-    t.subject,
-    t.years_service,
-    t.gsis_no,
-    t.philhealth_no,
-    t.tin_no,
-    t.employee_no,
-    t.bp_no   // ✅ CORRECT FIELD (FIXED)
+    d.teacher_id,
+    d.name,
+    d.gender,
+    d.position,
+    d.subject,
+    d.years_service,
+    d.gsis_no,
+    d.philhealth_no,
+    d.tin_no,
+    d.employee_no,
+    d.bp_no,
+    d.ipcrf_2023,
+    d.ipcrf_2024,
+    d.ipcrf_2025
   ], (err) => {
     if (err) {
       console.error(err);
-      return res.json({ ok:false });
+      return res.status(500).json({ error: "Save failed" });
     }
-    res.json({ ok:true });
+    res.json({ success: true });
   });
 
 });
@@ -131,43 +103,40 @@ app.post("/api/save-teacher", (req, res) => {
 /* =========================
    GET ONE TEACHER
 ========================= */
-app.get("/api/teacher/:id", (req,res)=>{
+app.get("/api/teacher/:id", (req, res) => {
+
   db.get(
-    "SELECT * FROM teachers WHERE teacher_id=?",
+    "SELECT * FROM teachers WHERE teacher_id = ?",
     [req.params.id],
-    (err,row)=>{
-      res.json(row||{});
+    (err, row) => {
+      if (err) {
+        console.error(err);
+        return res.json({});
+      }
+      res.json(row || {});
     }
   );
+
 });
 
 /* =========================
    GET ALL TEACHERS
 ========================= */
-app.get("/api/teachers", (req,res)=>{
-  db.all(
-    "SELECT * FROM teachers ORDER BY id DESC",
-    [],
-    (err,rows)=>{
-      res.json(rows||[]);
-    }
-  );
-});
+app.get("/api/all-teachers", (req, res) => {
 
-/* =========================
-   DELETE
-========================= */
-app.delete("/api/teachers/:id", (req,res)=>{
-  db.run(
-    "DELETE FROM teachers WHERE id=?",
-    [req.params.id],
-    ()=> res.json({ok:true})
-  );
+  db.all("SELECT * FROM teachers", [], (err, rows) => {
+    if (err) {
+      console.error(err);
+      return res.json([]);
+    }
+    res.json(rows);
+  });
+
 });
 
 /* =========================
    START SERVER
 ========================= */
 app.listen(PORT, () => {
-  console.log(`🚀 http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
