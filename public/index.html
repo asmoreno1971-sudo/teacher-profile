@@ -1,24 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Teacher Profile</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#eef3f7;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  width:420px;
+  margin:auto;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.header{text-align:center;margin-bottom:15px;}
+.school{font-size:22px;font-weight:bold;}
+.title{font-size:30px;font-weight:bold;}
+.datetime{font-size:13px;color:#666;}
+
+input,select{
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#f9fbfd;
+}
+
+button{
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+}
+
+.save{background:#4CAF50;}
+.logout{background:#ff6b6b;}
+
+.record-box{
+  margin-top:15px;
+  padding:12px;
+  background:#f5f5f5;
+  border-radius:10px;
+  font-size:13px;
+}
+
+#msg{
+  margin-top:10px;
+  text-align:center;
+  color:green;
+}
+
+.user-tag{
+  font-size:12px;
+  color:#333;
+  margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
 <script>
 
-/* 🔥 FORCE A WORKING USER */
+/* 🔐 CLEAN USER SYSTEM */
 let user = localStorage.getItem("user");
 
 if(!user){
-  user = "teacher1";
-  localStorage.setItem("user", user);
+  user = prompt("Enter your email or ID:");
+  if(user){
+    localStorage.setItem("user", user);
+  }else{
+    alert("User required");
+    location.reload();
+  }
 }
+
+</script>
+
+<div class="card">
+
+<div class="header">
+  <div class="school">Bakhaw Integrated School (500440)</div>
+  <div class="title">Teacher Profile</div>
+  <div class="user-tag">User: <span id="userDisplay"></span></div>
+  <div class="datetime" id="clock"></div>
+</div>
+
+<input id="family" placeholder="Family Name">
+<input id="first" placeholder="First Name">
+<input id="middle" placeholder="Middle Name">
+
+<select id="gender">
+  <option value="" disabled selected hidden>Sex</option>
+  <option value="MALE">MALE</option>
+  <option value="FEMALE">FEMALE</option>
+</select>
+
+<input id="position" placeholder="Position">
+<input id="subject" placeholder="Subject">
+<input id="years" type="number" placeholder="Years">
+
+<input id="gsis" placeholder="GSIS">
+<input id="phil" placeholder="PhilHealth">
+<input id="tin" placeholder="TIN">
+<input id="emp" placeholder="Employee No">
+<input id="bp" placeholder="BP No">
+
+<button class="save" onclick="save()">Save</button>
+<button class="logout" onclick="logout()">Switch User</button>
+
+<div id="msg"></div>
+
+<div class="record-box">
+<b>Your Current Record</b>
+<div id="recordContent">Loading...</div>
+</div>
+
+</div>
+
+<script>
+
+/* SHOW USER */
+userDisplay.innerText = user;
 
 /* CLOCK */
 function updateClock(){
-  clock.innerText=new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"});
+clock.innerText=new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"});
 }
 setInterval(updateClock,1000);
 updateClock();
 
 /* CAPS */
-function caps(el){ el.value=el.value.toUpperCase(); }
+function caps(el){ el.value = el.value.toUpperCase(); }
 [first,middle,position,subject].forEach(el=>{
-  el.addEventListener("input",()=>caps(el));
+el.addEventListener("input",()=>caps(el));
 });
 
 /* ENTER NEXT */
@@ -34,12 +158,11 @@ if(fields[i+1]) fields[i+1].focus();
 
 /* LOAD */
 async function loadProfile(){
-
-const res=await fetch("/api/teacher/"+user);
-const d=await res.json();
+const res = await fetch("/api/teacher/"+user);
+const d = await res.json();
 
 if(!d || !d.name){
-  recordContent.innerHTML="No record yet (click Save first)";
+  recordContent.innerHTML="No record yet — click Save";
   return;
 }
 
@@ -96,12 +219,14 @@ loadProfile();
 function updateRecord(d){
 recordContent.innerHTML=`
 Name: ${d.name||""}<br>
+Gender: ${d.gender||""}<br>
 Position: ${d.position||""}<br>
 Subject: ${d.subject||""}<br>
 Years: ${d.years_service||""}
 `;
 }
 
+/* SWITCH USER */
 function logout(){
 localStorage.removeItem("user");
 location.reload();
@@ -110,3 +235,6 @@ location.reload();
 window.onload=loadProfile;
 
 </script>
+
+</body>
+</html>
