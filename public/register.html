@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 320px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    .toggle {
+      font-size: 12px;
+      cursor: pointer;
+      color: blue;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .error {
+      color: red;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    a {
+      display: block;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Register</h2>
+
+  <div id="error" class="error"></div>
+
+  <input id="username" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <span class="toggle" onclick="togglePassword()">Show/Hide Password</span>
+
+  <button onclick="register()">Register</button>
+
+  <a href="/login.html">Already have an account? Login</a>
+</div>
+
+<script>
+
+// 🔹 SHOW / HIDE PASSWORD
+function togglePassword() {
+  password.type = password.type === "password" ? "text" : "password";
+}
+
+// 🔹 REGISTER FUNCTION
+function register() {
+
+  const email = username.value.trim();
+  const pass = password.value.trim();
+
+  const errorBox = document.getElementById("error");
+
+  // 🔴 VALIDATION
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(email)) {
+    errorBox.innerText = "Enter a valid email";
+    return;
+  }
+
+  if (pass.length < 4) {
+    errorBox.innerText = "Password must be at least 4 characters";
+    return;
+  }
+
+  errorBox.innerText = "";
+
+  fetch("/register", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      username: email,
+      password: pass
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    if (!data.success) {
+      errorBox.innerText = data.message || "Registration failed";
+      return;
+    }
+
+    alert("Registered successfully!");
+    window.location.href = "/login.html";
+  });
+}
+
+</script>
+
+</body>
+</html>

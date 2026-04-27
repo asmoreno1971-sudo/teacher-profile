@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Profile</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#eef3f7;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  width:420px;
+  margin:auto;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+}
+
+.header{text-align:center;margin-bottom:15px;}
+.school{font-size:22px;font-weight:bold;}
+.title{font-size:30px;font-weight:bold;}
+.datetime{font-size:13px;color:#666;}
+
+input,select{
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#f9fbfd;
+  color:#333;
+}
+
+button{
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+}
+
+.save{background:#4CAF50;}
+.logout{background:#ff6b6b;}
+
+.admin{
+  background:#e5e5e5;
+  color:#333;
+  width:100%;
+  font-weight:bold;
+}
+
+.record-box{
+  margin-top:15px;
+  padding:12px;
+  background:#f5f5f5;
+  border-radius:10px;
+  font-size:13px;
+}
+
+#msg{
+  margin-top:10px;
+  text-align:center;
+  color:green;
+}
+
+/* 🔐 MODAL */
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-box{
+  background:white;
+  padding:20px;
+  border-radius:12px;
+  width:300px;
+  text-align:center;
+}
+
+.enter-btn{
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  background:#4CAF50;
+  color:white;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.cancel-link{
+  margin-top:10px;
+  color:#666;
+  cursor:pointer;
+  font-size:14px;
+}
+.cancel-link:hover{ color:#000; }
+</style>
+</head>
+
+<body>
+
+<script>
+const user = localStorage.getItem("user");
+if(!user) location.href="login.html";
+</script>
+
+<div class="card">
+
+<div class="header">
+  <div class="school">Bakhaw Integrated School (500440)</div>
+  <div class="title">Teacher Profile</div>
+  <div class="datetime" id="clock"></div>
+</div>
+
+<input id="family" placeholder="Family Name">
+<input id="first" placeholder="First Name">
+<input id="middle" placeholder="Middle Name">
+
+<select id="gender" required>
+  <option value="" disabled selected hidden>Sex</option>
+  <option value="MALE">MALE</option>
+  <option value="FEMALE">FEMALE</option>
+</select>
+
+<input id="position" placeholder="Position">
+<input id="subject" placeholder="Subject">
+<input id="years" type="number" placeholder="Years">
+
+<input id="gsis" placeholder="GSIS">
+<input id="phil" placeholder="PhilHealth">
+<input id="tin" placeholder="TIN">
+<input id="emp" placeholder="Employee No">
+<input id="bp" placeholder="BP No">
+
+<button class="save" onclick="save()">Save</button>
+<button class="logout" onclick="logout()">Logout</button>
+
+<div id="msg"></div>
+
+<div class="record-box">
+  <b>Your Current Record</b>
+  <div id="recordContent">No record yet</div>
+</div>
+
+<button class="admin" onclick="openAdminModal()">Admin</button>
+
+</div>
+
+<!-- 🔐 ADMIN MODAL -->
+<div class="modal" id="adminModal">
+  <div class="modal-box">
+    <h3>Enter Admin Password</h3>
+    <input type="password" id="adminPass" placeholder="Password">
+    <button class="enter-btn" onclick="checkAdmin()">Enter</button>
+    <div class="cancel-link" onclick="closeAdmin()">Cancel</div>
+  </div>
+</div>
+
+<script>
+
+/* CLOCK */
+function updateClock(){
+  clock.innerText = new Date().toLocaleString();
+}
+setInterval(updateClock,1000);
+updateClock();
+
+/* CAPS */
+function caps(el){ el.value = el.value.toUpperCase(); }
+[first, middle, position, subject].forEach(el=>{
+  el.addEventListener("input", () => caps(el));
+});
+
+/* ENTER NEXT */
+const fields = document.querySelectorAll("input, select");
+fields.forEach((field, index) => {
+  field.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+      e.preventDefault();
+      if(fields[index + 1]) fields[index + 1].focus();
+    }
+  });
+});
+
+/* 🔐 MODAL CONTROL */
+function openAdminModal(){
+  adminModal.style.display="flex";
+  adminPass.value="";
+  adminPass.focus();
+}
+function closeAdmin(){
+  adminModal.style.display="none";
+}
+function checkAdmin(){
+  if(adminPass.value === "2929"){
+    sessionStorage.setItem("adminAuth","true");
+    location.href="admin.html";
+  }else{
+    alert("Incorrect password");
+  }
+}
+
+/* LOAD */
+async function loadProfile(){
+const res = await fetch("/api/teacher/"+user);
+const d = await res.json();
+
+if(!d.name){
+  recordContent.innerHTML = "No record yet";
+  return;
+}
+
+const parts=d.name.split(",");
+family.value=parts[0]||"";
+first.value=(parts[1]||"").trim().split(" ")[0]||"";
+middle.value=(parts[1]||"").trim().split(" ")[1]||"";
+
+gender.value = d.gender || "";
+position.value = (d.position || "").toUpperCase();
+subject.value = (d.subject || "").toUpperCase();
+years.value = d.years_service || "";
+gsis.value = d.gsis_no || "";
+phil.value = d.philhealth_no || "";
+tin.value = d.tin_no || "";
+emp.value = d.employee_no || "";
+bp.value = d.bp_no || "";
+
+/* DISPLAY */
+recordContent.innerHTML = `
+<b>Name:</b> ${d.name}<br>
+<b>Sex:</b> ${d.gender}<br>
+<b>Position:</b> ${d.position}<br>
+<b>Subject:</b> ${d.subject}<br>
+<b>Years:</b> ${d.years_service}<br>
+<b>GSIS:</b> ${d.gsis_no}<br>
+<b>PhilHealth:</b> ${d.philhealth_no}<br>
+<b>TIN:</b> ${d.tin_no}<br>
+<b>Employee No:</b> ${d.employee_no}<br>
+<b>BP No:</b> ${d.bp_no}
+`;
+}
+
+/* SAVE */
+async function save(){
+
+[first, middle, position, subject].forEach(el=>{
+  el.value = el.value.toUpperCase();
+});
+
+await fetch("/api/save-teacher",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({
+teacher_id:user,
+name:family.value+", "+first.value+" "+middle.value,
+gender:gender.value,
+position:position.value,
+subject:subject.value,
+years_service:years.value,
+gsis_no:gsis.value,
+philhealth_no:phil.value,
+tin_no:tin.value,
+employee_no:emp.value,
+bp_no:bp.value
+})
+});
+
+msg.innerText="Saved";
+await loadProfile();
+setTimeout(()=>msg.innerText="",2000);
+}
+
+function logout(){
+localStorage.removeItem("user");
+location.href="login.html";
+}
+
+window.onload=loadProfile;
+
+</script>
+
+</body>
+</html>

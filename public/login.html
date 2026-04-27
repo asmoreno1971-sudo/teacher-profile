@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#eef3f7;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.card{
+  background:white;
+  padding:25px;
+  border-radius:14px;
+  width:320px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  text-align:center;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  width:100%;
+  margin-top:15px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:#4CAF50;
+  color:white;
+  cursor:pointer;
+}
+
+#msg{
+  margin-top:10px;
+  color:red;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<h2>Login</h2>
+
+<!-- 🔥 AUTOFILL DISABLED -->
+<form autocomplete="off">
+
+<input id="u"
+       placeholder="Email"
+       autocomplete="off"
+       autocorrect="off"
+       autocapitalize="off"
+       spellcheck="false">
+
+<input id="p"
+       type="password"
+       placeholder="Password"
+       autocomplete="new-password">
+
+<button type="button" onclick="go()">Continue</button>
+
+</form>
+
+<div id="msg"></div>
+</div>
+
+<script>
+
+// 🔥 FORCE CLEAR EVERY TIME
+window.onload = () => {
+  u.value = "";
+  p.value = "";
+
+  // extra protection (Chrome workaround)
+  setTimeout(() => {
+    u.value = "";
+    p.value = "";
+  }, 100);
+};
+
+async function go(){
+
+const uVal=u.value.trim();
+const pVal=p.value.trim();
+
+if(!uVal||!pVal){
+msg.innerText="Enter email and password";
+return;
+}
+
+/* LOGIN */
+let r=await fetch("/api/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:uVal,password:pVal})
+});
+let d=await r.json();
+
+if(d.ok){
+localStorage.setItem("user",uVal);
+location.href="index.html";
+return;
+}
+
+/* REGISTER */
+r=await fetch("/api/register",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({username:uVal,password:pVal})
+});
+d=await r.json();
+
+if(d.ok){
+localStorage.setItem("user",uVal);
+location.href="index.html";
+}else{
+msg.innerText="Invalid login";
+}
+
+}
+
+</script>
+
+</body>
+</html>
