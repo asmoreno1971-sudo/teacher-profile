@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Profile</title>
+<title>Teacher Profile</title>
 
 <style>
 body{
@@ -31,7 +31,6 @@ input,select{
   border-radius:8px;
   border:1px solid #ccc;
   background:#f9fbfd;
-  color:#333;
 }
 
 button{
@@ -46,13 +45,6 @@ button{
 .save{background:#4CAF50;}
 .logout{background:#ff6b6b;}
 
-.admin{
-  background:#e5e5e5;
-  color:#333;
-  width:100%;
-  font-weight:bold;
-}
-
 .record-box{
   margin-top:15px;
   padding:12px;
@@ -66,43 +58,6 @@ button{
   text-align:center;
   color:green;
 }
-
-/* 🔐 MODAL */
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  justify-content:center;
-  align-items:center;
-}
-
-.modal-box{
-  background:white;
-  padding:20px;
-  border-radius:12px;
-  width:300px;
-  text-align:center;
-}
-
-.enter-btn{
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  background:#4CAF50;
-  color:white;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-}
-
-.cancel-link{
-  margin-top:10px;
-  color:#666;
-  cursor:pointer;
-  font-size:14px;
-}
-.cancel-link:hover{ color:#000; }
 </style>
 </head>
 
@@ -110,7 +65,11 @@ button{
 
 <script>
 const user = localStorage.getItem("user");
-if(!user) location.href="login.html";
+if(!user){
+  alert("No user detected. Setting default.");
+  localStorage.setItem("user","teacher1");
+  location.reload();
+}
 </script>
 
 <div class="card">
@@ -125,7 +84,7 @@ if(!user) location.href="login.html";
 <input id="first" placeholder="First Name">
 <input id="middle" placeholder="Middle Name">
 
-<select id="gender" required>
+<select id="gender">
   <option value="" disabled selected hidden>Sex</option>
   <option value="MALE">MALE</option>
   <option value="FEMALE">FEMALE</option>
@@ -151,25 +110,13 @@ if(!user) location.href="login.html";
   <div id="recordContent">No record yet</div>
 </div>
 
-<button class="admin" onclick="openAdminModal()">Admin</button>
-
-</div>
-
-<!-- 🔐 ADMIN MODAL -->
-<div class="modal" id="adminModal">
-  <div class="modal-box">
-    <h3>Enter Admin Password</h3>
-    <input type="password" id="adminPass" placeholder="Password">
-    <button class="enter-btn" onclick="checkAdmin()">Enter</button>
-    <div class="cancel-link" onclick="closeAdmin()">Cancel</div>
-  </div>
 </div>
 
 <script>
 
 /* CLOCK */
 function updateClock(){
-  clock.innerText = new Date().toLocaleString();
+  clock.innerText = new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"});
 }
 setInterval(updateClock,1000);
 updateClock();
@@ -182,109 +129,97 @@ function caps(el){ el.value = el.value.toUpperCase(); }
 
 /* ENTER NEXT */
 const fields = document.querySelectorAll("input, select");
-fields.forEach((field, index) => {
-  field.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
+fields.forEach((f,i)=>{
+  f.addEventListener("keydown", e=>{
+    if(e.key==="Enter"){
       e.preventDefault();
-      if(fields[index + 1]) fields[index + 1].focus();
+      if(fields[i+1]) fields[i+1].focus();
     }
   });
 });
 
-/* 🔐 MODAL CONTROL */
-function openAdminModal(){
-  adminModal.style.display="flex";
-  adminPass.value="";
-  adminPass.focus();
-}
-function closeAdmin(){
-  adminModal.style.display="none";
-}
-function checkAdmin(){
-  if(adminPass.value === "2929"){
-    sessionStorage.setItem("adminAuth","true");
-    location.href="admin.html";
-  }else{
-    alert("Incorrect password");
-  }
-}
-
 /* LOAD */
 async function loadProfile(){
-const res = await fetch("/api/teacher/"+user);
-const d = await res.json();
+  const res = await fetch("/api/teacher/"+user);
+  const d = await res.json();
 
-if(!d.name){
-  recordContent.innerHTML = "No record yet";
-  return;
-}
+  if(!d || !d.name){
+    recordContent.innerHTML = "No record yet";
+    return;
+  }
 
-const parts=d.name.split(",");
-family.value=parts[0]||"";
-first.value=(parts[1]||"").trim().split(" ")[0]||"";
-middle.value=(parts[1]||"").trim().split(" ")[1]||"";
+  const parts = d.name.split(",");
+  family.value = parts[0]||"";
+  first.value = (parts[1]||"").trim().split(" ")[0]||"";
+  middle.value = (parts[1]||"").trim().split(" ")[1]||"";
 
-gender.value = d.gender || "";
-position.value = (d.position || "").toUpperCase();
-subject.value = (d.subject || "").toUpperCase();
-years.value = d.years_service || "";
-gsis.value = d.gsis_no || "";
-phil.value = d.philhealth_no || "";
-tin.value = d.tin_no || "";
-emp.value = d.employee_no || "";
-bp.value = d.bp_no || "";
+  gender.value = d.gender || "";
+  position.value = (d.position || "").toUpperCase();
+  subject.value = (d.subject || "").toUpperCase();
+  years.value = d.years_service || "";
+  gsis.value = d.gsis_no || "";
+  phil.value = d.philhealth_no || "";
+  tin.value = d.tin_no || "";
+  emp.value = d.employee_no || "";
+  bp.value = d.bp_no || "";
 
-/* DISPLAY */
-recordContent.innerHTML = `
-<b>Name:</b> ${d.name}<br>
-<b>Sex:</b> ${d.gender}<br>
-<b>Position:</b> ${d.position}<br>
-<b>Subject:</b> ${d.subject}<br>
-<b>Years:</b> ${d.years_service}<br>
-<b>GSIS:</b> ${d.gsis_no}<br>
-<b>PhilHealth:</b> ${d.philhealth_no}<br>
-<b>TIN:</b> ${d.tin_no}<br>
-<b>Employee No:</b> ${d.employee_no}<br>
-<b>BP No:</b> ${d.bp_no}
-`;
+  updateRecord(d);
 }
 
 /* SAVE */
 async function save(){
 
-[first, middle, position, subject].forEach(el=>{
-  el.value = el.value.toUpperCase();
-});
+  [first, middle, position, subject].forEach(el=>{
+    el.value = el.value.toUpperCase();
+  });
 
-await fetch("/api/save-teacher",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-teacher_id:user,
-name:family.value+", "+first.value+" "+middle.value,
-gender:gender.value,
-position:position.value,
-subject:subject.value,
-years_service:years.value,
-gsis_no:gsis.value,
-philhealth_no:phil.value,
-tin_no:tin.value,
-employee_no:emp.value,
-bp_no:bp.value
-})
-});
+  await fetch("/api/save-teacher",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      teacher_id:user,
+      name:family.value+", "+first.value+" "+middle.value,
+      gender:gender.value,
+      position:position.value,
+      subject:subject.value,
+      years_service:years.value,
+      gsis_no:gsis.value,
+      philhealth_no:phil.value,
+      tin_no:tin.value,
+      employee_no:emp.value,
+      bp_no:bp.value
+    })
+  });
 
-msg.innerText="Saved";
-await loadProfile();
-setTimeout(()=>msg.innerText="",2000);
+  msg.innerText="Saved";
+  setTimeout(()=>msg.innerText="",2000);
+
+  loadProfile();
 }
 
+/* RECORD DISPLAY */
+function updateRecord(d){
+  recordContent.innerHTML=`
+  Name: ${d.name||""}<br>
+  Gender: ${d.gender||""}<br>
+  Position: ${d.position||""}<br>
+  Subject: ${d.subject||""}<br>
+  Years: ${d.years_service||""}<br>
+  GSIS: ${d.gsis_no||""}<br>
+  PhilHealth: ${d.philhealth_no||""}<br>
+  TIN: ${d.tin_no||""}<br>
+  Employee No: ${d.employee_no||""}<br>
+  BP No: ${d.bp_no||""}
+  `;
+}
+
+/* LOGOUT */
 function logout(){
-localStorage.removeItem("user");
-location.href="login.html";
+  localStorage.removeItem("user");
+  location.reload();
 }
 
-window.onload=loadProfile;
+window.onload = loadProfile;
 
 </script>
 
