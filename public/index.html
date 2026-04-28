@@ -96,10 +96,11 @@ if(!user){
 <input id="first" placeholder="First Name">
 <input id="middle" placeholder="Middle Name">
 
+
 <select id="gender">
-<option value="" disabled selected hidden>Sex</option>
-<option value="MALE">MALE</option>
-<option value="FEMALE">FEMALE</option>
+  <option value="" disabled selected hidden>Sex</option>
+  <option value="MALE">MALE</option>
+  <option value="FEMALE">FEMALE</option>
 </select>
 
 <input id="position" placeholder="Position">
@@ -223,7 +224,6 @@ setTimeout(()=>msg.innerText="",2000);
 /* DISPLAY */
 function updateRecord(d){
 recordContent.innerHTML=`
-<b>Personal Information</b><br>
 Name: ${d.name || "-"}<br>
 Gender: ${d.gender || "-"}<br>
 Position: ${d.position || "-"}<br>
