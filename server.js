@@ -113,6 +113,16 @@ app.get("/api/all-teachers", (req, res) => {
 
 });
 
+app.get("/api/teachers", (req, res) => {
+  db.all("SELECT * FROM teachers", [], (err, rows) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.json(rows);
+  });
+});
+
 /* =========================
    START
 ========================= */
