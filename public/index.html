@@ -36,7 +36,7 @@ input,select{
   border-radius:8px;
   border:1px solid #ccc;
   background:#f9fbfd;
-  color: #777;
+  color:#777;
 }
 
 button{
@@ -49,6 +49,7 @@ button{
 }
 
 .save{background:#4CAF50;}
+.logout{background:#e74c3c;}
 
 .record-box{
   margin-top:15px;
@@ -73,13 +74,7 @@ button{
 let user = localStorage.getItem("user");
 
 if(!user){
-  user = prompt("Enter your email or ID:");
-  if(user){
-    localStorage.setItem("user", user);
-  }else{
-    alert("User required");
-    location.reload();
-  }
+  window.location.href = "login.html";
 }
 </script>
 
@@ -96,7 +91,6 @@ if(!user){
 <input id="first" placeholder="First Name">
 <input id="middle" placeholder="Middle Name">
 
-
 <select id="gender">
   <option value="" disabled selected hidden>Sex</option>
   <option value="MALE">MALE</option>
@@ -107,14 +101,17 @@ if(!user){
 <input id="subject" placeholder="Subject">
 <input id="years" type="number" placeholder="Years">
 
-<!-- ✅ RESTORED INPUTS -->
 <input id="gsis" placeholder="GSIS">
 <input id="phil" placeholder="PhilHealth">
 <input id="tin" placeholder="TIN">
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
 
-<button class="save" onclick="save()">Save / Update</button>
+<!-- ✅ BUTTONS -->
+<div style="display:flex; justify-content:space-between; gap:10px;">
+  <button class="save" onclick="save()">Save / Update</button>
+  <button class="logout" onclick="logout()">Logout</button>
+</div>
 
 <div id="msg"></div>
 
@@ -165,7 +162,6 @@ if(!d || !d.name){
   return;
 }
 
-/* NAME SPLIT */
 const parts = d.name.split(",");
 family.value = parts[0] || "";
 
@@ -180,7 +176,6 @@ position.value = d.position || "";
 subject.value = d.subject || "";
 years.value = d.years_service || "";
 
-/* ✅ LOAD RESTORED FIELDS */
 gsis.value = d.gsis_no || "";
 phil.value = d.philhealth_no || "";
 tin.value = d.tin_no || "";
@@ -219,6 +214,12 @@ await loadProfile();
 
 msg.innerText="Saved / Updated";
 setTimeout(()=>msg.innerText="",2000);
+}
+
+/* LOGOUT */
+function logout(){
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
 }
 
 /* DISPLAY */
