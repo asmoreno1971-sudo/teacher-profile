@@ -65,7 +65,7 @@ tr:nth-child(even){
 
 async function loadAll(){
 
-const res = await fetch("/api/teachers");
+const res = await fetch("/api/all-teachers");
 const data = await res.json();
 
 const body = document.getElementById("tableBody");
