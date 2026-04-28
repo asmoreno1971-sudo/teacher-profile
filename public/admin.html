@@ -59,7 +59,6 @@ button{
 
 <h1>All Teacher Records</h1>
 
-<!-- ✅ ONLY CHANGE: wrapper added -->
 <div style="overflow-x:auto;">
 <table>
 <thead>
@@ -68,19 +67,12 @@ button{
 <th>Gender</th>
 <th>Position</th>
 <th>Subject</th>
-<th style="min-width:150px;">Last Updated</th>
 <th>Years</th>
-<th style="min-width:50px;">Last Updated</th>
 <th>GSIS</th>
-<th style="min-width:120px;">Last Updated</th>
 <th>PhilHealth</th>
-<th style="min-width:120px;">Last Updated</th>
 <th>TIN</th>
-<th style="min-width:120px;">Last Updated</th>
 <th>Employee No</th>
-<th style="min-width:120px;">Last Updated</th>
 <th>BP No</th>
-<th style="min-width:120px;">Last Updated</th>
 <th>Email</th>
 <th style="min-width:200px;">Last Updated</th>
 <th>Actions</th>
@@ -116,7 +108,7 @@ data.forEach(d => {
     <td>${d.employee_no || "-"}</td>
     <td>${d.bp_no || "-"}</td>
     <td>${d.teacher_id || "-"}</td>
-    <td>${d.last_updated || "-"}</td>
+    <td style="min-width:200px;">${d.last_updated || "-"}</td>
     <td>
       <button class="edit" onclick="editTeacher('${d.teacher_id}')">Edit</button>
       <button class="delete" onclick="deleteTeacher('${d.teacher_id}')">Delete</button>
