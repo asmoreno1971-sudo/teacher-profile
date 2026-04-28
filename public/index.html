@@ -29,7 +29,6 @@ body{
   color:#333;
 }
 
-/* keep your existing styles */
 input,select{
   width:100%;
   margin-top:10px;
@@ -40,12 +39,10 @@ input,select{
   color:black;
 }
 
-/* placeholder gray */
 input::placeholder{
   color:#999;
 }
 
-/* 🔥 FIX: Sex placeholder gray */
 select:invalid{
   color:#999;
 }
@@ -106,7 +103,6 @@ if(!user){
 <input id="first" placeholder="First Name">
 <input id="middle" placeholder="Middle Name">
 
-<!-- 🔥 FIXED SELECT -->
 <select id="gender">
   <option value="" disabled selected>Sex</option>
   <option value="MALE">MALE</option>
@@ -122,6 +118,16 @@ if(!user){
 <input id="tin" placeholder="TIN">
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
+
+<!-- ✅ ONLY ADDITION -->
+<label>IPCRF 2023-2024</label>
+<input id="ipcrf1" placeholder="Rating">
+
+<label>IPCRF 2024-2025</label>
+<input id="ipcrf2" placeholder="Rating">
+
+<label>IPCRF 2025-2026</label>
+<input id="ipcrf3" placeholder="Rating">
 
 <div style="display:flex; justify-content:space-between; gap:10px;">
   <button class="save" onclick="save()">Save / Update</button>

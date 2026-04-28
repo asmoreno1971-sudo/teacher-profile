@@ -18,6 +18,7 @@ table{
   width:100%;
   border-collapse:collapse;
   background:white;
+  table-layout:auto;
 }
 
 th, td{
@@ -59,6 +60,7 @@ button{
 
 <h1>All Teacher Records</h1>
 
+<div style="overflow-x:auto;">
 <table>
 <thead>
 <tr>
@@ -72,6 +74,11 @@ button{
 <th>TIN</th>
 <th>Employee No</th>
 <th>BP No</th>
+<th>Email</th>
+
+<!-- ✅ ONLY ADDITION -->
+<th>New Column</th>
+
 <th>Actions</th>
 </tr>
 </thead>
@@ -79,6 +86,7 @@ button{
 <tbody id="tableBody">
 </tbody>
 </table>
+</div>
 
 <script>
 
@@ -103,6 +111,11 @@ data.forEach(d => {
     <td>${d.tin_no || "-"}</td>
     <td>${d.employee_no || "-"}</td>
     <td>${d.bp_no || "-"}</td>
+    <td>${d.teacher_id || "-"}</td>
+
+    <!-- ✅ ONLY ADDITION -->
+    <td>-</td>
+
     <td>
       <button class="edit" onclick="editTeacher('${d.teacher_id}')">Edit</button>
       <button class="delete" onclick="deleteTeacher('${d.teacher_id}')">Delete</button>
@@ -120,7 +133,6 @@ function editTeacher(id){
 
 /* DELETE */
 async function deleteTeacher(id){
-
   if(!confirm("Delete this record?")) return;
 
   await fetch("/api/delete-teacher/" + id, {
