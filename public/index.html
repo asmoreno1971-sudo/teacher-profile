@@ -50,6 +50,7 @@ button{
 
 .save{background:#4CAF50;}
 .logout{background:#e74c3c;}
+.admin{background:#9b59b6;}
 
 .record-box{
   margin-top:15px;
@@ -110,7 +111,11 @@ if(!user){
 <!-- ✅ BUTTONS -->
 <div style="display:flex; justify-content:space-between; gap:10px;">
   <button class="save" onclick="save()">Save / Update</button>
-  <button class="logout" onclick="logout()">Logout</button>
+
+  <div style="display:flex; gap:10px;">
+    <button class="admin" onclick="openAdmin()">Admin</button>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
 </div>
 
 <div id="msg"></div>
@@ -124,7 +129,7 @@ if(!user){
 
 <script>
 
-/* SHOW USER */
+/* USER */
 userDisplay.innerText = user;
 
 /* CLOCK */
@@ -214,6 +219,19 @@ await loadProfile();
 
 msg.innerText="Saved / Updated";
 setTimeout(()=>msg.innerText="",2000);
+}
+
+/* ADMIN */
+function openAdmin(){
+
+  const pass = prompt("Enter admin password:");
+
+  if(pass === "2929"){
+    window.location.href = "admin.html";
+  }else{
+    alert("Wrong password");
+  }
+
 }
 
 /* LOGOUT */
