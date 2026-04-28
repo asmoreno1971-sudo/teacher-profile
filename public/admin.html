@@ -34,6 +34,24 @@ th{
 tr:nth-child(even){
   background:#f9f9f9;
 }
+
+button{
+  padding:5px 10px;
+  margin-right:5px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.edit{
+  background:#3498db;
+  color:white;
+}
+
+.delete{
+  background:#e74c3c;
+  color:white;
+}
 </style>
 </head>
 
@@ -54,6 +72,7 @@ tr:nth-child(even){
 <th>TIN</th>
 <th>Employee No</th>
 <th>BP No</th>
+<th>Actions</th>
 </tr>
 </thead>
 
@@ -84,10 +103,31 @@ data.forEach(d => {
     <td>${d.tin_no || "-"}</td>
     <td>${d.employee_no || "-"}</td>
     <td>${d.bp_no || "-"}</td>
+    <td>
+      <button class="edit" onclick="editTeacher('${d.teacher_id}')">Edit</button>
+      <button class="delete" onclick="deleteTeacher('${d.teacher_id}')">Delete</button>
+    </td>
   </tr>
   `;
 });
 
+}
+
+/* EDIT */
+function editTeacher(id){
+  window.location.href = "index.html?edit=" + id;
+}
+
+/* DELETE */
+async function deleteTeacher(id){
+
+  if(!confirm("Delete this record?")) return;
+
+  await fetch("/api/delete-teacher/" + id, {
+    method: "DELETE"
+  });
+
+  loadAll();
 }
 
 window.onload = loadAll;
