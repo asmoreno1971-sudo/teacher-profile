@@ -11,7 +11,6 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-/* DATABASE */
 const db = new sqlite3.Database("./teachers.db", (err) => {
   if (err) console.error(err.message);
   else console.log("✅ Connected to SQLite");
@@ -30,8 +29,7 @@ CREATE TABLE IF NOT EXISTS teachers (
   philhealth_no TEXT,
   tin_no TEXT,
   employee_no TEXT,
-  bp_no TEXT,
-  last_updated TEXT
+  bp_no TEXT
 )
 `);
 
@@ -39,14 +37,13 @@ CREATE TABLE IF NOT EXISTS teachers (
 app.post("/api/save-teacher", (req, res) => {
 
   const d = req.body;
-  const now = new Date().toLocaleString();
 
   db.run(`
   INSERT INTO teachers (
     teacher_id, name, gender, position, subject, years_service,
-    gsis_no, philhealth_no, tin_no, employee_no, bp_no, last_updated
+    gsis_no, philhealth_no, tin_no, employee_no, bp_no
   )
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   ON CONFLICT(teacher_id) DO UPDATE SET
     name=excluded.name,
     gender=excluded.gender,
@@ -57,8 +54,7 @@ app.post("/api/save-teacher", (req, res) => {
     philhealth_no=excluded.philhealth_no,
     tin_no=excluded.tin_no,
     employee_no=excluded.employee_no,
-    bp_no=excluded.bp_no,
-    last_updated=excluded.last_updated
+    bp_no=excluded.bp_no
   `, [
     d.teacher_id,
     d.name,
@@ -70,13 +66,23 @@ app.post("/api/save-teacher", (req, res) => {
     d.philhealth_no,
     d.tin_no,
     d.employee_no,
-    d.bp_no,
-    now
+    d.bp_no
   ], (err) => {
-    if (err) return res.json({ success:false });
+    if (err) {
+      console.error(err);
+      return res.json({ success:false });
+    }
     res.json({ success:true });
   });
 
+});
+
+/* GET ONE */
+app.get("/api/teacher/:id", (req, res) => {
+  db.get("SELECT * FROM teachers WHERE teacher_id=?", [req.params.id], (err, row) => {
+    if (err) return res.json({});
+    res.json(row || {});
+  });
 });
 
 /* GET ALL */
@@ -90,7 +96,10 @@ app.get("/api/all-teachers", (req, res) => {
 /* DELETE */
 app.delete("/api/delete-teacher/:id", (req, res) => {
   db.run("DELETE FROM teachers WHERE teacher_id=?", [req.params.id], function(err){
-    if(err) return res.json({ success:false });
+    if(err){
+      console.error(err);
+      return res.json({ success:false });
+    }
     res.json({ success:true });
   });
 });
