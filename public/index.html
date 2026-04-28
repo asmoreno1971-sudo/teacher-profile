@@ -29,6 +29,7 @@ body{
   color:#333;
 }
 
+/* ✅ ONLY CHANGE: text color set to black */
 input,select{
   width:100%;
   margin-top:10px;
@@ -36,7 +37,12 @@ input,select{
   border-radius:8px;
   border:1px solid #ccc;
   background:#f9fbfd;
-  color:#777;
+  color:black;
+}
+
+/* keep placeholder gray */
+input::placeholder{
+  color:#999;
 }
 
 button{
@@ -108,13 +114,12 @@ if(!user){
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
 
-<!-- ✅ BUTTONS -->
 <div style="display:flex; justify-content:space-between; gap:10px;">
   <button class="save" onclick="save()">Save / Update</button>
 
   <div style="display:flex; gap:10px;">
-  <button class="logout" onclick="logout()">Logout</button>    
-  <button class="admin" onclick="openAdmin()">Admin</button>
+    <button class="logout" onclick="logout()">Logout</button>
+    <button class="admin" onclick="openAdmin()">Admin</button>
   </div>
 </div>
 
@@ -129,23 +134,19 @@ if(!user){
 
 <script>
 
-/* USER */
 userDisplay.innerText = user;
 
-/* CLOCK */
 function updateClock(){
 clock.innerText=new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"});
 }
 setInterval(updateClock,1000);
 updateClock();
 
-/* CAPS */
 function caps(el){ el.value = el.value.toUpperCase(); }
 [first,middle,position,subject].forEach(el=>{
 el.addEventListener("input",()=>caps(el));
 });
 
-/* ENTER NEXT */
 const fields=document.querySelectorAll("input,select");
 fields.forEach((f,i)=>{
 f.addEventListener("keydown",e=>{
@@ -156,7 +157,6 @@ if(fields[i+1]) fields[i+1].focus();
 });
 });
 
-/* LOAD */
 async function loadProfile(){
 
 const res = await fetch("/api/teacher/"+user);
@@ -190,7 +190,6 @@ bp.value = d.bp_no || "";
 updateRecord(d);
 }
 
-/* SAVE */
 async function save(){
 
 [first,middle,position,subject].forEach(el=>{
@@ -221,26 +220,20 @@ msg.innerText="Saved / Updated";
 setTimeout(()=>msg.innerText="",2000);
 }
 
-/* ADMIN */
 function openAdmin(){
-
   const pass = prompt("Enter admin password:");
-
   if(pass === "2929"){
     window.location.href = "admin.html";
   }else{
     alert("Wrong password");
   }
-
 }
 
-/* LOGOUT */
 function logout(){
   localStorage.removeItem("user");
   window.location.href = "login.html";
 }
 
-/* DISPLAY */
 function updateRecord(d){
 recordContent.innerHTML=`
 Name: ${d.name || "-"}<br>
