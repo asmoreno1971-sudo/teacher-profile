@@ -24,6 +24,11 @@ body{
 .title{font-size:30px;font-weight:bold;}
 .datetime{font-size:13px;color:#666;}
 
+.user-tag{
+  font-size:12px;
+  color:#333;
+}
+
 input,select{
   width:100%;
   margin-top:10px;
@@ -51,6 +56,7 @@ button{
   background:#f5f5f5;
   border-radius:10px;
   font-size:13px;
+  line-height:1.6;
 }
 
 #msg{
@@ -58,20 +64,12 @@ button{
   text-align:center;
   color:green;
 }
-
-.user-tag{
-  font-size:12px;
-  color:#333;
-  margin-top:5px;
-}
 </style>
 </head>
 
 <body>
 
 <script>
-
-/* 🔐 CLEAN USER SYSTEM */
 let user = localStorage.getItem("user");
 
 if(!user){
@@ -83,7 +81,6 @@ if(!user){
     location.reload();
   }
 }
-
 </script>
 
 <div class="card">
@@ -100,9 +97,9 @@ if(!user){
 <input id="middle" placeholder="Middle Name">
 
 <select id="gender">
-  <option value="" disabled selected hidden>Sex</option>
-  <option value="MALE">MALE</option>
-  <option value="FEMALE">FEMALE</option>
+<option value="" disabled selected hidden>Sex</option>
+<option value="MALE">MALE</option>
+<option value="FEMALE">FEMALE</option>
 </select>
 
 <input id="position" placeholder="Position">
@@ -115,7 +112,7 @@ if(!user){
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
 
-<button class="save" onclick="save()">Save</button>
+<button class="save" onclick="save()">Save / Update</button>
 <button class="logout" onclick="logout()">Switch User</button>
 
 <div id="msg"></div>
@@ -156,31 +153,48 @@ if(fields[i+1]) fields[i+1].focus();
 });
 });
 
-/* LOAD */
+/* LOAD PROFILE */
 async function loadProfile(){
+
 const res = await fetch("/api/teacher/"+user);
 const d = await res.json();
+
+console.log("DATA:", d);
 
 if(!d || !d.name){
   recordContent.innerHTML="No record yet — click Save";
   return;
 }
 
-const parts=d.name.split(",");
-family.value=parts[0]||"";
-first.value=(parts[1]||"").trim().split(" ")[0]||"";
-middle.value=(parts[1]||"").trim().split(" ")[1]||"";
+/* NAME SPLIT */
+family.value="";
+first.value="";
+middle.value="";
 
-gender.value=d.gender||"";
-position.value=(d.position||"").toUpperCase();
-subject.value=(d.subject||"").toUpperCase();
-years.value=d.years_service||"";
-gsis.value=d.gsis_no||"";
-phil.value=d.philhealth_no||"";
-tin.value=d.tin_no||"";
-emp.value=d.employee_no||"";
-bp.value=d.bp_no||"";
+if(d.name){
+  const parts = d.name.split(",");
+  family.value = parts[0] || "";
 
+  if(parts[1]){
+    const names = parts[1].trim().split(" ");
+    first.value = names[0] || "";
+    middle.value = names.slice(1).join(" ") || "";
+  }
+}
+
+gender.value = d.gender || "";
+position.value = d.position || "";
+subject.value = d.subject || "";
+years.value = d.years_service || "";
+
+/* 🔥 FIXED SECTION */
+gsis.value = d.gsis_no ? String(d.gsis_no) : "";
+phil.value = d.philhealth_no ? String(d.philhealth_no) : "";
+tin.value = d.tin_no ? String(d.tin_no) : "";
+emp.value = d.employee_no ? String(d.employee_no) : "";
+bp.value = d.bp_no ? String(d.bp_no) : "";
+
+/* DISPLAY */
 updateRecord(d);
 }
 
@@ -209,20 +223,31 @@ bp_no:bp.value
 })
 });
 
-msg.innerText="Saved";
-setTimeout(()=>msg.innerText="",2000);
+/* FORCE REFRESH */
+await loadProfile();
 
-loadProfile();
+msg.innerText="Saved / Updated";
+setTimeout(()=>msg.innerText="",2000);
 }
 
-/* DISPLAY */
+/* DISPLAY RECORD */
 function updateRecord(d){
 recordContent.innerHTML=`
-Name: ${d.name||""}<br>
-Gender: ${d.gender||""}<br>
-Position: ${d.position||""}<br>
-Subject: ${d.subject||""}<br>
-Years: ${d.years_service||""}
+<b>Personal Information</b><br>
+Name: ${d.name || "-"}<br>
+Gender: ${d.gender || "-"}<br>
+Position: ${d.position || "-"}<br>
+Subject: ${d.subject || "-"}<br>
+Years of Service: ${d.years_service || "-"}<br><br>
+
+<b>Government IDs</b><br>
+GSIS: ${d.gsis_no || "-"}<br>
+PhilHealth: ${d.philhealth_no || "-"}<br>
+TIN: ${d.tin_no || "-"}<br>
+Employee No: ${d.employee_no || "-"}<br>
+BP No: ${d.bp_no || "-"}<br><br>
+
+Last Updated: ${d.last_updated || "-"}
 `;
 }
 
