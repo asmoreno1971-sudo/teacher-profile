@@ -43,6 +43,7 @@ input::placeholder{
   color:#999;
 }
 
+/* ✅ THIS makes Sex gray initially */
 select:invalid{
   color:#999;
 }
@@ -103,7 +104,8 @@ if(!user){
 <input id="first" placeholder="First Name">
 <input id="middle" placeholder="Middle Name">
 
-<select id="gender">
+<!-- ✅ REQUIRED added -->
+<select id="gender" required>
   <option value="" disabled selected>Sex</option>
   <option value="MALE">MALE</option>
   <option value="FEMALE">FEMALE</option>
@@ -119,7 +121,6 @@ if(!user){
 <input id="emp" placeholder="Employee No">
 <input id="bp" placeholder="BP No">
 
-<!-- ✅ ONLY ADDITION -->
 <label>IPCRF 2023-2024</label>
 <input id="ipcrf1" placeholder="Rating">
 
