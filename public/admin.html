@@ -59,6 +59,8 @@ button{
 
 <h1>All Teacher Records</h1>
 
+<!-- ✅ ONLY CHANGE: wrapper added -->
+<div style="overflow-x:auto;">
 <table>
 <thead>
 <tr>
@@ -72,11 +74,8 @@ button{
 <th>TIN</th>
 <th>Employee No</th>
 <th>BP No</th>
-
-<!-- ✅ ADDED -->
 <th>Email</th>
-<th>Last Updated</th>
-
+<th style="min-width:180px;">Last Updated</th>
 <th>Actions</th>
 </tr>
 </thead>
@@ -84,6 +83,7 @@ button{
 <tbody id="tableBody">
 </tbody>
 </table>
+</div>
 
 <script>
 
@@ -108,11 +108,8 @@ data.forEach(d => {
     <td>${d.tin_no || "-"}</td>
     <td>${d.employee_no || "-"}</td>
     <td>${d.bp_no || "-"}</td>
-
-    <!-- ✅ ADDED -->
     <td>${d.teacher_id || "-"}</td>
     <td>${d.last_updated || "-"}</td>
-
     <td>
       <button class="edit" onclick="editTeacher('${d.teacher_id}')">Edit</button>
       <button class="delete" onclick="deleteTeacher('${d.teacher_id}')">Delete</button>
