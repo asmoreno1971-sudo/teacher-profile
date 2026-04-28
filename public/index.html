@@ -105,6 +105,13 @@ if(!user){
 <input id="subject" placeholder="Subject">
 <input id="years" type="number" placeholder="Years">
 
+<!-- ✅ RESTORED INPUTS -->
+<input id="gsis" placeholder="GSIS">
+<input id="phil" placeholder="PhilHealth">
+<input id="tin" placeholder="TIN">
+<input id="emp" placeholder="Employee No">
+<input id="bp" placeholder="BP No">
+
 <button class="save" onclick="save()">Save / Update</button>
 
 <div id="msg"></div>
@@ -157,25 +164,26 @@ if(!d || !d.name){
 }
 
 /* NAME SPLIT */
-family.value="";
-first.value="";
-middle.value="";
+const parts = d.name.split(",");
+family.value = parts[0] || "";
 
-if(d.name){
-  const parts = d.name.split(",");
-  family.value = parts[0] || "";
-
-  if(parts[1]){
-    const names = parts[1].trim().split(" ");
-    first.value = names[0] || "";
-    middle.value = names.slice(1).join(" ") || "";
-  }
+if(parts[1]){
+  const names = parts[1].trim().split(" ");
+  first.value = names[0] || "";
+  middle.value = names.slice(1).join(" ") || "";
 }
 
 gender.value = d.gender || "";
 position.value = d.position || "";
 subject.value = d.subject || "";
 years.value = d.years_service || "";
+
+/* ✅ LOAD RESTORED FIELDS */
+gsis.value = d.gsis_no || "";
+phil.value = d.philhealth_no || "";
+tin.value = d.tin_no || "";
+emp.value = d.employee_no || "";
+bp.value = d.bp_no || "";
 
 updateRecord(d);
 }
@@ -196,7 +204,12 @@ name:family.value+", "+first.value+" "+middle.value,
 gender:gender.value,
 position:position.value,
 subject:subject.value,
-years_service:years.value
+years_service:years.value,
+gsis_no:gsis.value,
+philhealth_no:phil.value,
+tin_no:tin.value,
+employee_no:emp.value,
+bp_no:bp.value
 })
 });
 
@@ -214,7 +227,13 @@ Name: ${d.name || "-"}<br>
 Gender: ${d.gender || "-"}<br>
 Position: ${d.position || "-"}<br>
 Subject: ${d.subject || "-"}<br>
-Years of Service: ${d.years_service || "-"}
+Years of Service: ${d.years_service || "-"}<br><br>
+
+GSIS: ${d.gsis_no || "-"}<br>
+PhilHealth: ${d.philhealth_no || "-"}<br>
+TIN: ${d.tin_no || "-"}<br>
+Employee No: ${d.employee_no || "-"}<br>
+BP No: ${d.bp_no || "-"}
 `;
 }
 
