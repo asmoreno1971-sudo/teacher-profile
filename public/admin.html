@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Admin</title>
+<title>Admin - Teacher Records</title>
 
 <style>
 body{
@@ -10,30 +10,20 @@ body{
   padding:20px;
 }
 
-.wrapper{
-  background:#f0f0f0;
-  padding:15px;
-  border-radius:12px;
+h1{
+  text-align:center;
 }
 
-/* 🔥 SCROLL CONTAINER */
-.table-container{
-  overflow-x:auto;
-}
-
-/* TABLE */
 table{
-  min-width:1200px; /* allows spilling */
+  width:100%;
   border-collapse:collapse;
   background:white;
-  font-size:13px;
 }
 
-th,td{
-  padding:8px;
+th, td{
+  padding:10px;
   border:1px solid #ddd;
-  text-align:center;
-  white-space:nowrap; /* prevent wrapping */
+  text-align:left;
 }
 
 th{
@@ -41,54 +31,19 @@ th{
   color:white;
 }
 
-/* 🔥 BUTTON ROW */
-.action{
-  display:flex;
-  justify-content:center;
-  gap:6px;
+tr:nth-child(even){
+  background:#f9f9f9;
 }
-
-.btn{
-  width:70px;
-  padding:6px 0;
-  border:none;
-  color:white;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:12px;
-}
-
-/* LIGHT COLORS */
-.edit{ background:#66bb6a; }
-.del{ background:#ef5350; }
-
-.edit:hover{ background:#57a05a; }
-.del:hover{ background:#d84343; }
-
 </style>
 </head>
 
 <body>
 
-<script>
-if(sessionStorage.getItem("adminAuth") !== "true"){
-  alert("Unauthorized access");
-  location.href="index.html";
-}
-</script>
-
-<h2>Admin Panel</h2>
-
-<div class="wrapper">
-
-<button onclick="load()">Refresh</button>
-
-<div class="table-container">
+<h1>All Teacher Records</h1>
 
 <table>
 <thead>
 <tr>
-<th>ID</th>
 <th>Name</th>
 <th>Gender</th>
 <th>Position</th>
@@ -97,79 +52,45 @@ if(sessionStorage.getItem("adminAuth") !== "true"){
 <th>GSIS</th>
 <th>PhilHealth</th>
 <th>TIN</th>
-<th>Email</th>
-<th>Employee</th>
-<th>BP</th>
-<th>Updated</th>
-<th>Action</th>
+<th>Employee No</th>
+<th>BP No</th>
 </tr>
 </thead>
 
-<tbody id="tb"></tbody>
-
+<tbody id="tableBody">
+</tbody>
 </table>
-
-</div>
-
-</div>
 
 <script>
 
-async function load(){
-const r = await fetch("/api/teachers");
-const data = await r.json();
+async function loadAll(){
 
-tb.innerHTML = "";
+const res = await fetch("/api/teachers");
+const data = await res.json();
 
-data.forEach(t=>{
-tb.innerHTML += `
-<tr>
-<td>${t.id}</td>
-<td>${t.name||""}</td>
-<td>${t.gender||""}</td>
-<td>${t.position||""}</td>
-<td>${t.subject||""}</td>
-<td>${t.years_service||""}</td>
-<td>${t.gsis_no||""}</td>
-<td>${t.philhealth_no||""}</td>
-<td>${t.tin_no||""}</td>
-<td>${t.teacher_id||""}</td>
-<td>${t.employee_no||""}</td>
-<td>${t.bp_no||""}</td>
-<td>${formatDate(t.last_updated)}</td>
-<td>
-  <div class="action">
-    <button class="btn edit" onclick="edit('${t.teacher_id}')">Edit</button>
-    <button class="btn del" onclick="del(${t.id})">Delete</button>
-  </div>
-</td>
-</tr>`;
+const body = document.getElementById("tableBody");
+body.innerHTML = "";
+
+data.forEach(d => {
+  body.innerHTML += `
+  <tr>
+    <td>${d.name || "-"}</td>
+    <td>${d.gender || "-"}</td>
+    <td>${d.position || "-"}</td>
+    <td>${d.subject || "-"}</td>
+    <td>${d.years_service || "-"}</td>
+    <td>${d.gsis_no || "-"}</td>
+    <td>${d.philhealth_no || "-"}</td>
+    <td>${d.tin_no || "-"}</td>
+    <td>${d.employee_no || "-"}</td>
+    <td>${d.bp_no || "-"}</td>
+  </tr>
+  `;
 });
+
 }
 
-/* DATE ONLY */
-function formatDate(dt){
-  if(!dt) return "";
-  const d = new Date(dt);
-  return d.toLocaleDateString("en-US", {
-    timeZone:"Asia/Manila",
-    year:"numeric",
-    month:"short",
-    day:"numeric"
-  });
-}
-
-function edit(id){
-localStorage.setItem("editUser", id);
-location.href="index.html";
-}
-
-async function del(id){
-await fetch("/api/teachers/"+id,{method:"DELETE"});
-load();
-}
-
-window.onload = load;
+window.onload = loadAll;
 
 </script>
 
