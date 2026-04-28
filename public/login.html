@@ -32,6 +32,7 @@ input{
   margin-top:10px;
   border-radius:8px;
   border:1px solid #ccc;
+  background:#f9fbfd;
 }
 
 button{
@@ -62,7 +63,6 @@ button{
 </div>
 
 <script>
-<script>
 function login(){
 
 const email = document.getElementById("email").value;
@@ -73,18 +73,11 @@ if(!email || !password){
   return;
 }
 
-localStorage.setItem("user", email);
-
-/* ✅ FIXED REDIRECT */
-window.location.href = "index.html";
-
-}
-</script>
 /* Save user */
 localStorage.setItem("user", email);
 
-/* Redirect to main app */
-window.location.href = "/";
+/* Redirect */
+window.location.href = "index.html";
 
 }
 </script>
