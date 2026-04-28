@@ -123,6 +123,22 @@ app.get("/api/teachers", (req, res) => {
   });
 });
 
+app.delete("/api/delete-teacher/:id", (req, res) => {
+
+  db.run(
+    "DELETE FROM teachers WHERE teacher_id = ?",
+    [req.params.id],
+    function(err){
+      if(err){
+        console.error(err);
+        return res.json({ success:false });
+      }
+      res.json({ success:true });
+    }
+  );
+
+});
+
 /* =========================
    START
 ========================= */
