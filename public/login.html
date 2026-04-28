@@ -62,6 +62,7 @@ button{
 </div>
 
 <script>
+<script>
 function login(){
 
 const email = document.getElementById("email").value;
@@ -72,6 +73,13 @@ if(!email || !password){
   return;
 }
 
+localStorage.setItem("user", email);
+
+/* ✅ FIXED REDIRECT */
+window.location.href = "index.html";
+
+}
+</script>
 /* Save user */
 localStorage.setItem("user", email);
 
