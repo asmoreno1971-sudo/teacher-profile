@@ -29,7 +29,6 @@ body{
   color:#333;
 }
 
-/* ✅ ONLY CHANGE: text color set to black */
 input,select{
   width:100%;
   margin-top:10px;
@@ -37,12 +36,7 @@ input,select{
   border-radius:8px;
   border:1px solid #ccc;
   background:#f9fbfd;
-  color:black;
-}
-
-/* keep placeholder gray */
-input::placeholder{
-  color:#999;
+  color:#777;
 }
 
 button{
@@ -94,32 +88,53 @@ if(!user){
   <div class="datetime" id="clock"></div>
 </div>
 
+<label style="display:block; margin-top:10px;">Family Name:</label>
 <input id="family" placeholder="Family Name">
+
+<label style="display:block; margin-top:10px;">First Name:</label>
 <input id="first" placeholder="First Name">
+
+<label style="display:block; margin-top:10px;">Middle Name:</label>
 <input id="middle" placeholder="Middle Name">
 
+<label style="display:block; margin-top:10px;">Sex:</label>
 <select id="gender">
   <option value="" disabled selected hidden>Sex</option>
   <option value="MALE">MALE</option>
   <option value="FEMALE">FEMALE</option>
 </select>
 
+<label style="display:block; margin-top:10px;">Position:</label>
 <input id="position" placeholder="Position">
+
+<label style="display:block; margin-top:10px;">Subject:</label>
 <input id="subject" placeholder="Subject">
+
+<label style="display:block; margin-top:10px;">Years of Service:</label>
 <input id="years" type="number" placeholder="Years">
 
+<label style="display:block; margin-top:10px;">GSIS:</label>
 <input id="gsis" placeholder="GSIS">
+
+<label style="display:block; margin-top:10px;">PhilHealth:</label>
 <input id="phil" placeholder="PhilHealth">
+
+<label style="display:block; margin-top:10px;">TIN:</label>
 <input id="tin" placeholder="TIN">
+
+<label style="display:block; margin-top:10px;">Employee No:</label>
 <input id="emp" placeholder="Employee No">
+
+<label style="display:block; margin-top:10px;">BP No:</label>
 <input id="bp" placeholder="BP No">
 
+<!-- ✅ BUTTONS -->
 <div style="display:flex; justify-content:space-between; gap:10px;">
   <button class="save" onclick="save()">Save / Update</button>
 
   <div style="display:flex; gap:10px;">
-    <button class="logout" onclick="logout()">Logout</button>
-    <button class="admin" onclick="openAdmin()">Admin</button>
+  <button class="logout" onclick="logout()">Logout</button>    
+  <button class="admin" onclick="openAdmin()">Admin</button>
   </div>
 </div>
 
@@ -134,19 +149,23 @@ if(!user){
 
 <script>
 
+/* USER */
 userDisplay.innerText = user;
 
+/* CLOCK */
 function updateClock(){
 clock.innerText=new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"});
 }
 setInterval(updateClock,1000);
 updateClock();
 
+/* CAPS */
 function caps(el){ el.value = el.value.toUpperCase(); }
 [first,middle,position,subject].forEach(el=>{
 el.addEventListener("input",()=>caps(el));
 });
 
+/* ENTER NEXT */
 const fields=document.querySelectorAll("input,select");
 fields.forEach((f,i)=>{
 f.addEventListener("keydown",e=>{
@@ -157,6 +176,7 @@ if(fields[i+1]) fields[i+1].focus();
 });
 });
 
+/* LOAD */
 async function loadProfile(){
 
 const res = await fetch("/api/teacher/"+user);
@@ -190,6 +210,7 @@ bp.value = d.bp_no || "";
 updateRecord(d);
 }
 
+/* SAVE */
 async function save(){
 
 [first,middle,position,subject].forEach(el=>{
@@ -220,20 +241,26 @@ msg.innerText="Saved / Updated";
 setTimeout(()=>msg.innerText="",2000);
 }
 
+/* ADMIN */
 function openAdmin(){
+
   const pass = prompt("Enter admin password:");
+
   if(pass === "2929"){
     window.location.href = "admin.html";
   }else{
     alert("Wrong password");
   }
+
 }
 
+/* LOGOUT */
 function logout(){
   localStorage.removeItem("user");
   window.location.href = "login.html";
 }
 
+/* DISPLAY */
 function updateRecord(d){
 recordContent.innerHTML=`
 Name: ${d.name || "-"}<br>
