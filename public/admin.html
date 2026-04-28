@@ -75,10 +75,6 @@ button{
 <th>Employee No</th>
 <th>BP No</th>
 <th>Email</th>
-
-<!-- ✅ ONLY ADDITION -->
-<th>New Column</th>
-
 <th>Actions</th>
 </tr>
 </thead>
@@ -112,10 +108,6 @@ data.forEach(d => {
     <td>${d.employee_no || "-"}</td>
     <td>${d.bp_no || "-"}</td>
     <td>${d.teacher_id || "-"}</td>
-
-    <!-- ✅ ONLY ADDITION -->
-    <td>-</td>
-
     <td>
       <button class="edit" onclick="editTeacher('${d.teacher_id}')">Edit</button>
       <button class="delete" onclick="deleteTeacher('${d.teacher_id}')">Delete</button>
