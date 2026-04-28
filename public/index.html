@@ -105,12 +105,6 @@ if(!user){
 <input id="subject" placeholder="Subject">
 <input id="years" type="number" placeholder="Years">
 
-<input id="gsis" placeholder="GSIS">
-<input id="phil" placeholder="PhilHealth">
-<input id="tin" placeholder="TIN">
-<input id="emp" placeholder="Employee No">
-<input id="bp" placeholder="BP No">
-
 <button class="save" onclick="save()">Save / Update</button>
 
 <div id="msg"></div>
@@ -151,7 +145,7 @@ if(fields[i+1]) fields[i+1].focus();
 });
 });
 
-/* LOAD PROFILE */
+/* LOAD */
 async function loadProfile(){
 
 const res = await fetch("/api/teacher/"+user);
@@ -183,14 +177,6 @@ position.value = d.position || "";
 subject.value = d.subject || "";
 years.value = d.years_service || "";
 
-/* STILL LOAD IDs (for saving), but not shown below */
-gsis.value = d.gsis_no || "";
-phil.value = d.philhealth_no || "";
-tin.value = d.tin_no || "";
-emp.value = d.employee_no || "";
-bp.value = d.bp_no || "";
-
-/* DISPLAY */
 updateRecord(d);
 }
 
@@ -210,23 +196,17 @@ name:family.value+", "+first.value+" "+middle.value,
 gender:gender.value,
 position:position.value,
 subject:subject.value,
-years_service:years.value,
-gsis_no:gsis.value,
-philhealth_no:phil.value,
-tin_no:tin.value,
-employee_no:emp.value,
-bp_no:bp.value
+years_service:years.value
 })
 });
 
-/* REFRESH */
 await loadProfile();
 
 msg.innerText="Saved / Updated";
 setTimeout(()=>msg.innerText="",2000);
 }
 
-/* DISPLAY (CLEAN ONLY) */
+/* DISPLAY */
 function updateRecord(d){
 recordContent.innerHTML=`
 <b>Personal Information</b><br>
