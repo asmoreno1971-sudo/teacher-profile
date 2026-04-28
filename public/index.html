@@ -29,7 +29,7 @@ body{
   color:#333;
 }
 
-/* ✅ TEXT COLOR FIX */
+/* keep your existing styles */
 input,select{
   width:100%;
   margin-top:10px;
@@ -40,17 +40,16 @@ input,select{
   color:black;
 }
 
-/* placeholder stays gray */
+/* placeholder gray */
 input::placeholder{
   color:#999;
 }
 
-/* dropdown default text gray */
+/* 🔥 FIX: Sex placeholder gray */
 select:invalid{
   color:#999;
 }
 
-/* selected value becomes black */
 select{
   color:black;
 }
@@ -107,8 +106,9 @@ if(!user){
 <input id="first" placeholder="First Name">
 <input id="middle" placeholder="Middle Name">
 
+<!-- 🔥 FIXED SELECT -->
 <select id="gender">
-  <option value="" disabled selected hidden>Sex</option>
+  <option value="" disabled selected>Sex</option>
   <option value="MALE">MALE</option>
   <option value="FEMALE">FEMALE</option>
 </select>
