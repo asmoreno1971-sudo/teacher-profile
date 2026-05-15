@@ -1,262 +1,692 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Teacher Profile</title>
+<title>Preorder Menu</title>
 
 <style>
 body{
   font-family:Arial;
-  background:#eef3f7;
-  padding:20px;
+  padding:12px;
 }
 
-.card{
-  background:white;
-  padding:20px;
-  border-radius:14px;
-  width:420px;
-  margin:auto;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+.page{
+  display:flex;
+  gap:20px;
+  align-items:flex-start;
 }
 
-.header{text-align:center;margin-bottom:15px;}
-.school{font-size:22px;font-weight:bold;}
-.title{font-size:30px;font-weight:bold;}
-.datetime{font-size:13px;color:#666;}
-
-.user-tag{
-  font-size:12px;
-  color:#333;
+.main{
+  flex:1;
 }
 
-input,select{
-  width:100%;
-  margin-top:10px;
+.order-fields{
+  max-width:320px;
+  margin-bottom:12px;
   padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  background:#f9fbfd;
-  color:black;
+  border:1px solid #e5e5e5;
+  border-radius:10px;
+  background:#fffdf7;
 }
 
-input::placeholder{
-  color:#999;
-}
-
-select:invalid{
-  color:#999;
-}
-
+/* INPUT + SELECT */
+input#name,
 select{
-  color:black;
+  width:100%;
+  max-width:300px;
+  padding:10px 14px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin-bottom:10px;
+}
+
+/* SUMMARY PANEL */
+.summary-panel{
+  width:260px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:15px;
+  position:sticky;
+  top:10px;
+  background:#fafafa;
+}
+
+.summary-header{
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  gap:10px;
+}
+
+.summary-title-wrap{
+  width:100%;
+}
+
+#summaryTitle{
+  font-size:17px;
+  margin:0;
+  line-height:1.2;
+  font-weight:normal;
+  text-align:left;
+  width:100%;
+  word-break:break-word;
+  overflow-wrap:break-word;
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+.current-time{
+  font-size:16px;
+  text-align:left;
+  white-space:nowrap;
+}
+
+.summary-time{
+  font-size:16px;
+  margin-bottom:12px;
+  padding-bottom:8px;
+  border-bottom:1px solid #ddd;
+}
+
+.sum-row{
+  display:grid;
+  grid-template-columns:1fr 40px 80px;
+  align-items:center;
+  margin-bottom:4px;
+}
+
+.sum-name{
+  text-align:left;
+}
+
+.sum-qty{
+  text-align:right;
+}
+
+.sum-price{
+  text-align:right;
+}
+
+.summary-total{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:10px;
+  font-weight:bold;
+}
+
+/* MENU ROW */
+.menu-row{
+  display:grid;
+  grid-template-columns:120px 110px 240px;
+  align-items:center;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:1px solid #eee;
+}
+
+.img-wrap{
+  position:relative;
+  width:110px;
+  height:70px;
+}
+
+.menu-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.overlay-name{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  background:rgba(0,0,0,0.6);
+  color:#fff;
+  font-size:12px;
+  padding:4px;
+}
+
+.controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+.menu-btn{
+  width:32px;
+  height:32px;
+  background:#6f4e37;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.qty{
+  width:40px;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  line-height:1;
+}
+
+.price-group{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:6px;
+  font-family:monospace;
+  white-space:nowrap;
+  font-size:20px;
+}
+
+.subtotal{
+  width:90px;
+  text-align:right;
+  color:#b85c00;
+  font-weight:bold;
+  font-size:20px;
 }
 
 button{
   margin-top:10px;
   padding:10px;
-  border:none;
-  border-radius:10px;
+  background:#6f4e37;
   color:white;
+  border:none;
+  border-radius:6px;
   cursor:pointer;
 }
 
-.save{background:#4CAF50;}
-.logout{background:#e74c3c;}
-.admin{background:#9b59b6;}
-
-.record-box{
-  margin-top:15px;
-  padding:12px;
-  background:#f5f5f5;
-  border-radius:10px;
-  font-size:14px;
-  line-height:1.7;
-}
-
-#msg{
-  margin-top:10px;
-  text-align:center;
-  color:green;
+button:disabled{
+  background:#ccc;
 }
 </style>
 </head>
 
 <body>
 
-<script>
-let user = localStorage.getItem("user");
-if(!user){
-  window.location.href = "login.html";
-}
-</script>
+<div class="page">
 
-<div class="card">
+<div class="main">
 
-<div class="header">
-  <div class="school">Bakhaw Integrated School (500440)</div>
-  <div class="title">Teacher Profile</div>
-  <div class="user-tag">User: <span id="userDisplay"></span></div>
-  <div class="datetime" id="clock"></div>
-</div>
+<h3>Preorder Menu</h3>
 
-<input id="family" placeholder="Family Name">
-<input id="first" placeholder="First Name">
-<input id="middle" placeholder="Middle Name">
+<div class="order-fields">
+<input
+id="name"
+placeholder="Your Name"
+style="text-transform:uppercase;">
 
-<select id="gender" required>
-  <option value="" disabled selected>Sex</option>
-  <option value="MALE">MALE</option>
-  <option value="FEMALE">FEMALE</option>
+<h4>Available Time</h4>
+
+<select id="timeSelect">
+<option value="">-- Select Time --</option>
 </select>
 
-<input id="position" placeholder="Position">
-<input id="subject" placeholder="Subject">
-<input id="years" type="number" placeholder="Years">
-
-<input id="gsis" placeholder="GSIS">
-<input id="phil" placeholder="PhilHealth">
-<input id="tin" placeholder="TIN">
-<input id="emp" placeholder="Employee No">
-<input id="bp" placeholder="BP No">
-
-<!-- ✅ ONLY CHANGE HERE -->
-<input id="ipcrf1" placeholder="Latest IPCRF Rating. Ex. 5.0">
-
-<div style="display:flex; justify-content:space-between; gap:10px;">
-  <button class="save" onclick="save()">Save / Update</button>
-
-  <div style="display:flex; gap:10px;">
-    <button class="logout" onclick="logout()">Logout</button>
-    <button class="admin" onclick="openAdmin()">Admin</button>
-  </div>
+<input type="hidden" id="time">
 </div>
 
-<div id="msg"></div>
+<div id="menuContainer"></div>
 
-<div class="record-box">
-<b>Your Current Record</b><br><br>
-<div id="recordContent">Loading...</div>
+</div>
+
+<div class="summary-panel">
+
+<div class="summary-header">
+
+<div id="nowTime" class="current-time"></div>
+
+<div class="summary-title-wrap">
+
+<h3 id="summaryTitle">
+Order Summary
+</h3>
+
+</div>
+
+</div>
+
+<div class="summary-time">
+Order available at:
+<br>
+<strong>
+<span id="summaryTime">--</span>
+</strong>
+</div>
+
+<div id="liveSummary">
+No items yet
+</div>
+
+<div class="summary-total">
+Total ₱<span id="liveTotal">0</span>
+</div>
+
+<button
+id="orderBtn"
+disabled
+onclick="openSummary()">
+Place Order
+</button>
+
 </div>
 
 </div>
 
 <script>
 
-userDisplay.innerText = user;
+let menu=[];
 
-function updateClock(){
-clock.innerText=new Date().toLocaleString("en-US",{timeZone:"Asia/Manila"});
-}
-setInterval(updateClock,1000);
-updateClock();
+const quantities={};
 
-function caps(el){ el.value = el.value.toUpperCase(); }
-[first,middle,position,subject].forEach(el=>{
-el.addEventListener("input",()=>caps(el));
-});
+/* CLOCK */
+function updateNowTime(){
 
-const fields=document.querySelectorAll("input,select");
-fields.forEach((f,i)=>{
-f.addEventListener("keydown",e=>{
-if(e.key==="Enter"){
-e.preventDefault();
-if(fields[i+1]) fields[i+1].focus();
-}
-});
-});
+  const now=new Date();
 
-async function loadProfile(){
-const res = await fetch("/api/teacher/"+user);
-const d = await res.json();
+  const date=now.toLocaleDateString();
 
-if(!d || !d.name){
-  recordContent.innerHTML="No record yet — click Save";
-  return;
+  const h=now.getHours();
+
+  const m=now.getMinutes()
+  .toString()
+  .padStart(2,'0');
+
+  const ap=h>=12?'PM':'AM';
+
+  const dh=h%12||12;
+
+  document.getElementById('nowTime').innerText=
+    `${date} ${dh}:${m} ${ap}`;
 }
 
-const parts = d.name.split(",");
-family.value = parts[0] || "";
+setInterval(updateNowTime,1000);
 
-if(parts[1]){
-  const names = parts[1].trim().split(" ");
-  first.value = names[0] || "";
-  middle.value = names.slice(1).join(" ") || "";
-}
+updateNowTime();
 
-gender.value = d.gender || "";
-position.value = d.position || "";
-subject.value = d.subject || "";
-years.value = d.years_service || "";
+/* TIME */
+function generateTimes(){
 
-gsis.value = d.gsis_no || "";
-phil.value = d.philhealth_no || "";
-tin.value = d.tin_no || "";
-emp.value = d.employee_no || "";
-bp.value = d.bp_no || "";
+  const select=
+    document.getElementById('timeSelect');
 
-updateRecord(d);
-}
+  const now=new Date();
 
-async function save(){
-[first,middle,position,subject].forEach(el=>{
-el.value=el.value.toUpperCase();
-});
+  now.setMinutes(now.getMinutes()+30);
 
-await fetch("/api/save-teacher",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-teacher_id:user,
-name:family.value+", "+first.value+" "+middle.value,
-gender:gender.value,
-position:position.value,
-subject:subject.value,
-years_service:years.value,
-gsis_no:gsis.value,
-philhealth_no:phil.value,
-tin_no:tin.value,
-employee_no:emp.value,
-bp_no:bp.value
-})
-});
+  for(let i=510;i<=1320;i+=15){
 
-await loadProfile();
+    const slot=new Date();
 
-msg.innerText="Saved / Updated";
-setTimeout(()=>msg.innerText="",2000);
-}
+    slot.setHours(
+      Math.floor(i/60),
+      i%60
+    );
 
-function openAdmin(){
-  const pass = prompt("Enter admin password:");
-  if(pass === "2929"){
-    window.location.href = "admin.html";
-  }else{
-    alert("Wrong password");
+    if(slot < now) continue;
+
+    let h=slot.getHours();
+
+    let ap=h>=12?'PM':'AM';
+
+    let dh=h%12||12;
+
+    let dm=slot.getMinutes()
+    .toString()
+    .padStart(2,'0');
+
+    const t=`${dh}:${dm} ${ap}`;
+
+    const opt=document.createElement('option');
+
+    opt.value=t;
+
+    opt.textContent=t;
+
+    select.appendChild(opt);
   }
 }
 
-function logout(){
-  localStorage.removeItem("user");
-  window.location.href = "login.html";
+generateTimes();
+
+/* SELECT */
+timeSelect.onchange=function(){
+
+  time.value=this.value;
+
+  summaryTime.innerHTML=
+    this.value
+    ? `<strong>${this.value}</strong>`
+    : "--";
+
+  validate();
+};
+
+/* NAME INPUT */
+document
+.getElementById("name")
+.addEventListener("input", validate);
+
+/* MENU */
+fetch('/menu')
+.then(r=>r.json())
+.then(data=>{
+
+  menu=data;
+
+  renderMenu();
+});
+
+function renderMenu(){
+
+  const c=
+    document.getElementById('menuContainer');
+
+  c.innerHTML="";
+
+  menu.forEach(item=>{
+
+    quantities[item.id]=0;
+
+    const row=document.createElement('div');
+
+    row.className='menu-row';
+
+    row.innerHTML=`
+
+      <div class="img-wrap">
+
+        <img
+        src="${item.image}"
+        class="menu-img">
+
+        <div class="overlay-name">
+          ${item.name}
+        </div>
+
+      </div>
+
+      <div class="controls">
+
+        <button
+        class="menu-btn"
+        onclick="changeQty('${item.id}',-1)">
+        -
+        </button>
+
+        <div
+        id="q-${item.id}"
+        class="qty">
+        0
+        </div>
+
+        <button
+        class="menu-btn"
+        onclick="changeQty('${item.id}',1)">
+        +
+        </button>
+
+      </div>
+
+      <div class="price-group">
+
+        <span id="q2-${item.id}"></span>
+
+        × ₱${item.price} =
+
+        <span
+        id="s-${item.id}"
+        class="subtotal">
+        ₱0
+        </span>
+
+      </div>
+    `;
+
+    c.appendChild(row);
+  });
 }
 
-function updateRecord(d){
-recordContent.innerHTML=`
-Name: ${d.name || "-"}<br>
-Gender: ${d.gender || "-"}<br>
-Position: ${d.position || "-"}<br>
-Subject: ${d.subject || "-"}<br>
-Years of Service: ${d.years_service || "-"}<br><br>
+/* QTY */
+function changeQty(id,d){
 
-GSIS: ${d.gsis_no || "-"}<br>
-PhilHealth: ${d.philhealth_no || "-"}<br>
-TIN: ${d.tin_no || "-"}<br>
-Employee No: ${d.employee_no || "-"}<br>
-BP No: ${d.bp_no || "-"}
-`;
+  quantities[id]+=d;
+
+  if(quantities[id]<0){
+
+    quantities[id]=0;
+  }
+
+  document.getElementById(`q-${id}`)
+  .innerText=quantities[id];
+
+  const qDisplay=
+    document.getElementById(`q2-${id}`);
+
+  qDisplay.innerText="";
+
+  updateTotal();
+
+  validate();
 }
 
-window.onload=loadProfile;
+/* TOTAL */
+function updateTotal(){
+
+  let total=0;
+
+  menu.forEach(m=>{
+
+    const sub=
+      quantities[m.id]*m.price;
+
+    total+=sub;
+
+    document.getElementById(`s-${m.id}`)
+    .innerText=`₱${sub}`;
+  });
+
+  updateSummary();
+}
+
+/* SUMMARY */
+function updateSummary(){
+
+  let html="";
+
+  let total=0;
+
+  menu.forEach(m=>{
+
+    if(quantities[m.id]>0){
+
+      const qty=quantities[m.id];
+
+      const sub=qty*m.price;
+
+      total+=sub;
+
+      html+=`
+
+        <div class="sum-row">
+
+          <div class="sum-name">
+            ${m.name}
+          </div>
+
+          <div class="sum-qty">
+            ${qty}
+          </div>
+
+          <div class="sum-price">
+            ₱${sub}
+          </div>
+
+        </div>
+      `;
+    }
+  });
+
+  liveSummary.innerHTML=
+    html || "No items yet";
+
+  liveTotal.innerText=total;
+}
+
+/* VALIDATE */
+function validate(){
+
+  const nameInput=
+    document.getElementById('name');
+
+  nameInput.value =
+    nameInput.value.toUpperCase();
+
+  const nameVal =
+    nameInput.value.trim();
+
+  document.getElementById("summaryTitle")
+  .innerHTML=
+    nameVal
+    ? `Order Summary:
+    <strong>${nameVal}</strong>`
+    :"Order Summary";
+
+  let has=false;
+
+  for(let k in quantities){
+
+    if(quantities[k]>0){
+
+      has=true;
+    }
+  }
+
+  const valid=
+    (nameVal && time.value && has);
+
+  orderBtn.disabled=!valid;
+
+  orderBtn.style.background=
+    valid
+    ? '#6f4e37'
+    : '#ccc';
+}
+
+
+function resetSale(){
+
+  for(const id in quantities){
+    quantities[id]=0;
+  }
+
+  renderMenu();
+
+  document.getElementById('name').value='';
+  document.getElementById('timeSelect').value='';
+  document.getElementById('time').value='';
+  document.getElementById('summaryTime').innerText='--';
+
+  updateTotal();
+  validate();
+}
+
+/* ORDER */
+async function openSummary(){
+
+  if(!confirm("Place Order Now?")){
+    return;
+  }
+
+  const items=[];
+
+  let total=0;
+
+  menu.forEach(m=>{
+
+    if(quantities[m.id] > 0){
+
+      const sub =
+        quantities[m.id] * m.price;
+
+      total += sub;
+
+      items.push({
+
+        name:m.name,
+
+        qty:quantities[m.id],
+
+        price:m.price,
+
+        subtotal:sub
+      });
+    }
+  });
+
+  if(items.length===0){
+    resetSale();
+    return;
+  }
+
+  const orderData = {
+
+    customer_name:
+      document.getElementById('name')
+      .value
+      .trim(),
+
+    pickup_time:
+      document.getElementById('time')
+      .value,
+
+    items:items,
+
+    total:total
+  };
+
+  try{
+
+    const res = await fetch('/place-order',{
+
+      method:'POST',
+
+      headers:{
+        'Content-Type':'application/json'
+      },
+
+      body:JSON.stringify(orderData)
+    });
+
+    const data = await res.json();
+
+    if(data.success){
+
+      alert(
+`Order Sent Successfully!
+
+Order ID:
+${data.order_id}`
+      );
+
+      resetSale();
+
+    }else{
+
+      alert('Failed to send order.');
+    }
+
+  }catch(err){
+
+    console.log(err);
+
+    alert('Server connection failed.');
+  }
+}
 
 </script>
 
