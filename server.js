@@ -7,6 +7,14 @@ const path = require("path");
 const app = express();
 const PORT = 3000;
 
+
+const defaultMenu = [
+  { id: 'latte', name: 'Cafe Latte', price: 130, image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?auto=format&fit=crop&w=640&q=60' },
+  { id: 'mocha', name: 'Cafe Mocha', price: 145, image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=640&q=60' },
+  { id: 'americano', name: 'Americano', price: 110, image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=640&q=60' },
+  { id: 'matcha', name: 'Matcha Latte', price: 150, image: 'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&w=640&q=60' }
+];
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
@@ -102,6 +110,27 @@ app.delete("/api/delete-teacher/:id", (req, res) => {
     }
     res.json({ success:true });
   });
+});
+
+
+/* PREORDER MENU */
+app.get('/menu', (req, res) => {
+  res.json(defaultMenu);
+});
+
+app.post('/place-order', (req, res) => {
+  const order = req.body || {};
+
+  if (!order.customer_name || !order.pickup_time || !Array.isArray(order.items) || order.items.length === 0) {
+    return res.json({ success: false });
+  }
+
+  const stamp = Date.now().toString().slice(-6);
+  const orderId = `PO-${stamp}`;
+
+  console.log('New preorder:', { order_id: orderId, ...order });
+
+  res.json({ success: true, order_id: orderId });
 });
 
 /* START */
