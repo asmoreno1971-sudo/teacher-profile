@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><title>POS Roadworthy - Kitchen</title>
+<style>
+body{font-family:Arial;background:#f7f7f7;padding:16px}
+.card{background:#fff;border:1px solid #ddd;border-radius:10px;padding:12px;margin-bottom:10px}
+button{padding:8px 10px;background:#2f855a;color:#fff;border:none;border-radius:8px;cursor:pointer}
+</style>
+</head>
+<body>
+<h2>Kitchen Queue</h2>
+<div id="queue"></div>
+<script>
+async function loadQueue(){
+  const res=await fetch('/api/sales');
+  const sales=await res.json();
+  const pending=sales.filter(s=>s.status!=='DONE');
+  queue.innerHTML=pending.map(s=>`<div class="card"><b>${s.order_id}</b> - ${s.customer_name}<br>Pickup: ${s.pickup_time}<br>Total: ₱${s.total}<br><button onclick="markDone(${s.sale_id})">Mark Done</button></div>`).join('') || '<div class="card">No pending orders</div>';
+}
+async function markDone(id){
+  await fetch('/api/sales/'+id+'/status',{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'DONE'})});
+  loadQueue();
+}
+loadQueue();
+setInterval(loadQueue,5000);
+</script>
+</body>
+</html>
