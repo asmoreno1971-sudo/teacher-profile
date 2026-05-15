@@ -1,142 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Admin - Teacher Records</title>
-
-<style>
-body{
-  font-family:Arial;
-  background:#eef3f7;
-  padding:20px;
-}
-
-h1{
-  text-align:center;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  background:white;
-  table-layout:auto;
-}
-
-th, td{
-  padding:10px;
-  border:1px solid #ddd;
-  text-align:left;
-}
-
-th{
-  background:#4CAF50;
-  color:white;
-}
-
-tr:nth-child(even){
-  background:#f9f9f9;
-}
-
-button{
-  padding:5px 10px;
-  margin-right:5px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-
-.edit{
-  background:#3498db;
-  color:white;
-}
-
-.delete{
-  background:#e74c3c;
-  color:white;
-}
-</style>
+  <title>POS Roadworthy - Admin</title>
+  <style>
+    body{font-family:Arial;padding:16px;background:#f6f3ef}
+    .card{background:#fff;border:1px solid #ddd;border-radius:10px;padding:14px;margin-bottom:12px}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    input,button{padding:8px 10px;border-radius:8px;border:1px solid #ccc}
+    button{background:#6f4e37;color:#fff;border:none;cursor:pointer}
+    table{width:100%;border-collapse:collapse;background:#fff}
+    th,td{border:1px solid #ddd;padding:8px;font-size:14px;text-align:left}
+    th{background:#eee}
+  </style>
 </head>
-
 <body>
-
-<h1>All Teacher Records</h1>
-
-<div style="overflow-x:auto;">
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Gender</th>
-<th>Position</th>
-<th>Subject</th>
-<th>Years</th>
-<th>GSIS</th>
-<th>PhilHealth</th>
-<th>TIN</th>
-<th>Employee No</th>
-<th>BP No</th>
-<th>Email</th>
-<th>Actions</th>
-</tr>
-</thead>
-
-<tbody id="tableBody">
-</tbody>
-</table>
-</div>
-
+  <h2>POS Roadworthy Admin Report</h2>
+  <div class="card row">
+    <label>Date:</label><input type="date" id="dateFilter">
+    <button onclick="loadSales()">Apply Filter</button>
+    <button onclick="window.print()">Print</button>
+    <strong>Daily Total: ₱<span id="dailyTotal">0</span></strong>
+  </div>
+  <table>
+    <thead><tr><th>Sale ID</th><th>Order ID</th><th>Customer</th><th>Pickup</th><th>Total</th><th>Created</th></tr></thead>
+    <tbody id="salesBody"></tbody>
+  </table>
 <script>
-
-async function loadAll(){
-
-const res = await fetch("/api/all-teachers");
-const data = await res.json();
-
-const body = document.getElementById("tableBody");
-body.innerHTML = "";
-
-data.forEach(d => {
-  body.innerHTML += `
-  <tr>
-    <td>${d.name || "-"}</td>
-    <td>${d.gender || "-"}</td>
-    <td>${d.position || "-"}</td>
-    <td>${d.subject || "-"}</td>
-    <td>${d.years_service || "-"}</td>
-    <td>${d.gsis_no || "-"}</td>
-    <td>${d.philhealth_no || "-"}</td>
-    <td>${d.tin_no || "-"}</td>
-    <td>${d.employee_no || "-"}</td>
-    <td>${d.bp_no || "-"}</td>
-    <td>${d.teacher_id || "-"}</td>
-    <td>
-      <button class="edit" onclick="editTeacher('${d.teacher_id}')">Edit</button>
-      <button class="delete" onclick="deleteTeacher('${d.teacher_id}')">Delete</button>
-    </td>
-  </tr>
-  `;
-});
-
+function toDate(v){return new Date(v).toISOString().slice(0,10)}
+async function loadSales(){
+  const res=await fetch('/api/sales');
+  const all=await res.json();
+  const f=document.getElementById('dateFilter').value;
+  const rows=f?all.filter(s=>toDate(s.created_at)===f):all;
+  let total=0;
+  salesBody.innerHTML=rows.map(r=>{total+=Number(r.total||0);return `<tr><td>${r.sale_id}</td><td>${r.order_id}</td><td>${r.customer_name}</td><td>${r.pickup_time}</td><td>₱${r.total}</td><td>${r.created_at}</td></tr>`}).join('') || '<tr><td colspan="6">No sales</td></tr>';
+  dailyTotal.innerText=total.toFixed(2);
 }
-
-/* EDIT */
-function editTeacher(id){
-  window.location.href = "index.html?edit=" + id;
-}
-
-/* DELETE */
-async function deleteTeacher(id){
-  if(!confirm("Delete this record?")) return;
-
-  await fetch("/api/delete-teacher/" + id, {
-    method: "DELETE"
-  });
-
-  loadAll();
-}
-
-window.onload = loadAll;
-
+loadSales();
 </script>
-
 </body>
 </html>
